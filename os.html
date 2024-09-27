@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de O.S</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F3F7FF;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #FFFFFF;
+            width: 340px;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .container img {
+            width: 200px;
+            margin-bottom: -40px;
+        }
+
+        h2 {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 18px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input[type="date"],
+        input[type="tel"],
+        input[type="text"] {
+            padding-left: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 18px;
+            font-weight: 700;
+            color: #000;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 10px; /* Adiciona um espaço entre os botões */
+        }
+
+        .gerar-relatorio {
+            background-color: #FFD233;
+        }
+
+        .gerar-relatorio:hover {
+            background-color: #e6c029;
+        }
+
+        .limpar-relatorio {
+            background-color: #800080;
+            color: #ffffff; /* Cor roxa */
+        }
+
+        .limpar-relatorio:hover {
+            background-color: #6a006a; /* Cor roxa escura ao passar o mouse */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <img src="img/logo.png" alt="Ágil Online Logo">
+        <h2>Relatório de O.S</h2>
+
+        <form id="formRelatorio" onsubmit="return false;">
+            <select id="cliente" required>
+                <option value="" disabled selected>Cliente Relatou Que:</option>
+                <option value="Que está enfrentando problemas de conexão. Não há sinal algum e que o roteador está com a luz vermelha acesa.">Que está enfrentando problemas de conexão. Não há sinal algum e que o roteador está com a luz vermelha acesa.</option>
+                <option value="Que está sem conexão nenhuma, Informou que o roteador não está ligando">Que está sem conexão nenhuma, Informou que o roteador não está ligando</option>
+                <option value="*Orientação* Que sua Internet está Oscilando muito, conexão lenta">*****Orientação***** Que sua Internet está Oscilando muito, conexão lenta</option>
+                <option value="Precisa de Mudança de Ponto">Precisa de Mudança de Ponto</option>
+                <option value="Que sua Internet está Oscilando muito, conexão lenta, caindo varias vezes.">Que sua Internet está Oscilando muito, conexão lenta, caindo varias vezes.</option>
+            </select>
+
+            <select id="diagnostico" required>
+                <option value="" disabled selected>Diagnóstico Técnico:</option>
+                <option value="Foi feito testes e verificado instalação e foi constatado que a Fibra está rompida">Foi feito testes e verificado instalação e foi constatado que a Fibra está rompida</option>
+                <option value="Cliente está sem sinal, Drop Rompido.">Cliente está sem sinal, Drop Rompido</option>
+                <option value="Cliente Foi informado dos custos para mudança de ponto e está ciente.">Cliente Foi informado dos custos para mudança de ponto.</option>
+                <option value="*Orientação* Foi verificado instalação, Feito ajustes no roteador, testes de internet, cliente informa que problema persiste, Sinal Ok,Conexão OK.">*****Orientação***** Foi verificado instalação, Feito ajustes no roteador, testes de internet, cliente informa que problema persiste, Sinal Ok,Conexão OK.</option>
+                <option value="Foi feito testes, verificado instalação e o problema persistiu apresentando LUZ VERMELHA/LOS">Foi feito testes, verificado instalação e o problema persistiu apresentando LUZ VERMELHA/LOS</option>
+                <option value="Foi verificado instalação, foi testado em outras tomadas e o problema persistiu, roteador queimado">Foi verificado instalação, foi testado em outras tomadas e o problema persistiu, roteador queimado</option>
+                <option value="Foi feito testes e verificado instalação, feito ajustes em roteador e foi constatado que o sinal está Atenuado">Foi feito testes e verificado instalação, feito ajustes em roteador e foi constatado que o sinal está Atenuado</option>
+            </select>
+
+            <select id="sinal" required>
+                <option value="" disabled selected>Sinal óptico RX:</option>
+                <option value="Sem Sinal/LOS">Sem Sinal/LOS</option>
+                <option value="-15 dBm">-15 dBm</option>
+                <option value="-16 dBm">-16 dBm</option>
+                <option value="-17 dBm">-17 dBm</option>
+                <option value="-18 dBm">-18 dBm</option>
+                <option value="-19 dBm">-19 dBm</option>
+                <option value="-20 dBm">-20 dBm</option>
+                <option value="-21 dBm">-21 dBm</option>
+                <option value="-22 dBm">-22 dBm</option>
+                <option value="-23 dBm">-23 dBm</option>
+                <option value="-24 dBm">-24 dBm</option>
+                <option value="-25 dBm">-25 dBm</option>
+                <option value="-26 dBm">-26 dBm</option>
+                <option value="-27 dBm">-27 dBm</option>
+                <option value="-28 dBm">-28 dBm</option>
+                <option value="-29 dBm">-29 dBm</option>
+                <option value="-30 dBm">-30 dBm</option>
+                <option value="-31 dBm">-31 dBm</option>
+                <option value="-32 dBm">-32 dBm</option>
+                <option value="-33 dBm">-33 dBm</option>
+                <option value="-34 dBm">-34 dBm</option>
+                <option value="-35 dBm">-35 dBm</option>
+            </select>
+
+            <input type="text" id="cto" placeholder="Número da CTO" required>
+
+            <select id="clientes" required>
+                <option value="" disabled selected>Quantidade de clientes na CTO:</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+            </select>
+
+            <input type="date" id="data" required>
+
+            <select id="equipamento" required>
+                <option value="" disabled selected>Equipamento que está instalado:</option>
+                <option value="Huawei">Huawei</option>
+                <option value="Intelbras">Intelbras</option>
+                <option value="Mercusys">Mercusys</option>
+                <option value="Unee">Unee</option>
+                <option value="FW">FW</option>
+            </select>
+
+            <input type="tel" id="telefone" placeholder="Telefone" required>
+
+            <input type="text" id="obs" placeholder="Observações" required>
+
+            <button class="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
+            <button class="limpar-relatorio" onclick="limparCampos()">Limpar Relatório</button>
+        </form>
+    </div>
+
+    <script>
+        function gerarRelatorio() {
+            const cliente = document.getElementById('cliente').value;
+            const diagnostico = document.getElementById('diagnostico').value;
+            const sinal = document.getElementById('sinal').value;
+            const cto = document.getElementById('cto').value;
+            const clientes = document.getElementById('clientes').value;
+            const data = document.getElementById('data').value;
+            const equipamento = document.getElementById('equipamento').value;
+            const telefone = document.getElementById('telefone').value;
+            const obs = document.getElementById('obs').value;
+
+            const relatorio = `
+                Relatório de O.S
+                Cliente relatou que: ${cliente}
+                Diagnóstico técnico: ${diagnostico}
+                Sinal óptico RX: ${sinal}
+                CTO: ${cto}
+                Quantidade de clientes na CTO: ${clientes}
+                Data: ${data}
+                Equipamento instalado: ${equipamento}
+                Telefone: ${telefone}
+                Observações: ${obs}
+            `;
+
+            // Copiar para a área de transferência
+            navigator.clipboard.writeText(relatorio)
+                .then(() => {
+                    alert('Relatório copiado para a área de transferência!');
+                })
+                .catch(err => {
+                    console.error('Erro ao copiar o relatório: ', err);
+                });
+        }
+
+        function limparCampos() {
+            document.getElementById('formRelatorio').reset();
+        }
+    </script>
+</body>
+
+</html>
