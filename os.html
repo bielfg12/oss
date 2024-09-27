@@ -65,7 +65,7 @@
             color: #000;
             font-size: 16px;
             cursor: pointer;
-            margin-bottom: 10px; /* Adiciona um espaço entre os botões */
+            margin-bottom: 10px;
         }
 
         .gerar-relatorio {
@@ -78,11 +78,11 @@
 
         .limpar-relatorio {
             background-color: #800080;
-            color: #ffffff; /* Cor roxa */
+            color: #ffffff;
         }
 
         .limpar-relatorio:hover {
-            background-color: #6a006a; /* Cor roxa escura ao passar o mouse */
+            background-color: #6a006a;
         }
     </style>
 </head>
@@ -182,49 +182,53 @@
             <input type="text" id="obs" placeholder="Observações" required>
 
             <button class="gerar-relatorio" onclick="gerarRelatorio()">Gerar Relatório</button>
-            <button class="limpar-relatorio" onclick="limparCampos()">Limpar Relatório</button>
+            <button class="limpar-relatorio" onclick="limparRelatorio()">Limpar Relatório</button>
         </form>
+
     </div>
 
     <script>
-        function gerarRelatorio() {
-            const cliente = document.getElementById('cliente').value;
-            const diagnostico = document.getElementById('diagnostico').value;
-            const sinal = document.getElementById('sinal').value;
-            const cto = document.getElementById('cto').value;
-            const clientes = document.getElementById('clientes').value;
-            const data = document.getElementById('data').value;
-            const equipamento = document.getElementById('equipamento').value;
-            const telefone = document.getElementById('telefone').value;
-            const obs = document.getElementById('obs').value;
+    function gerarRelatorio() {
+        const cliente = document.getElementById('cliente').value;
+        const diagnostico = document.getElementById('diagnostico').value;
+        const sinal = document.getElementById('sinal').value;
+        const cto = document.getElementById('cto').value;
+        const clientes = document.getElementById('clientes').value;
+        const data = document.getElementById('data').value;
+        const equipamento = document.getElementById('equipamento').value;
+        const telefone = document.getElementById('telefone').value;
+        const obs = document.getElementById('obs').value;
 
-            const relatorio = `
-                Relatório de O.S
-                Cliente relatou que: ${cliente}
-                Diagnóstico técnico: ${diagnostico}
-                Sinal óptico RX: ${sinal}
-                CTO: ${cto}
-                Quantidade de clientes na CTO: ${clientes}
-                Data: ${data}
-                Equipamento instalado: ${equipamento}
-                Telefone: ${telefone}
-                Observações: ${obs}
-            `;
+        // Formatando a data para DD/MM/YYYY
+        const dataFormatada = formatarData(data);
 
-            // Copiar para a área de transferência
-            navigator.clipboard.writeText(relatorio)
-                .then(() => {
-                    alert('Relatório copiado para a área de transferência!');
-                })
-                .catch(err => {
-                    console.error('Erro ao copiar o relatório: ', err);
-                });
-        }
+        const relatorio = `Cliente relatou: ${cliente}
+Diagnóstico técnico: ${diagnostico}
+Sinal óptico RX: ${sinal}
+Quantidade de clientes na CTO: ${clientes}
+Equipamento instalado: ${equipamento}
+Data da visita: ${dataFormatada}
+Número da CTO: ${cto}
+Telefone: ${telefone}
+Observações: ${obs}`;
 
-        function limparCampos() {
-            document.getElementById('formRelatorio').reset();
-        }
-    </script>
+        // Copia o relatório gerado sem incluir espaços em branco no início
+        navigator.clipboard.writeText(relatorio.trim());
+
+        alert("Relatório copiado para a área de transferência!");
+    }
+
+    function formatarData(data) {
+        const partesData = data.split("-");
+        return `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+    }
+
+    function limparRelatorio() {
+        document.getElementById('formRelatorio').reset();
+    }
+</script>
+
+
 </body>
 
 </html>
