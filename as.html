@@ -11,7 +11,7 @@
             margin: 0;
             backdrop-filter: blur(40px); /* Aplica desfoque ao fundo */
             padding: 20px;
-            background-image: url('wl.png'); 
+            background-image: url('https://ibb.co/3dD5nz5'); 
             background-size: cover; 
             background-position: center;
             background-repeat: no-repeat;
@@ -167,6 +167,28 @@
                 checkbox.checked = false;
             });
         }
+
+        function limitarSelecaoPorCategoria(categoria) {
+            const checkboxes = document.querySelectorAll(`input[name="${categoria}"]`);
+            
+            checkboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', function() {
+                    // Desmarca todos os checkboxes, exceto o atual
+                    checkboxes.forEach((cb) => {
+                        if (cb !== checkbox) {
+                            cb.checked = false;
+                        }
+                    });
+                });
+            });
+        }
+
+        // Aplica a função para cada categoria
+        document.addEventListener('DOMContentLoaded', function() {
+            limitarSelecaoPorCategoria('categoria1');
+            limitarSelecaoPorCategoria('categoria2');
+            limitarSelecaoPorCategoria('categoria3');
+        });
     </script>
 </head>
 <body>
@@ -174,80 +196,80 @@
         <div style="text-align: right;">
             <label>
                 <input type="checkbox" id="darkModeSwitch" onchange="toggleDarkMode()" style="cursor: pointer;">
-                🌙 Modo Escuro
+                🌞 Modo Claro
             </label>
         </div>
 
         <h3>📨 Cliente Relatou que:</h3>
         <label>
-                <input type="checkbox" id="opcao1" data-mascarado="Cliente Relatou que: está enfrentando problemas de conexão. Não há sinal algum e que o roteador está com a luz vermelha acesa.">
+                <input type="checkbox" id="opcao1" name="categoria1" data-mascarado="Cliente Relatou que: está enfrentando problemas de conexão. Não há sinal algum e que o roteador está com a luz vermelha acesa.">
                 ❌Los/Luz Vermelha
             </label><br>
             <label>
-                <input type="checkbox" id="opcao2" data-mascarado="Cliente Relatou que: está sem conexão nenhuma, Informou que o roteador não está ligando">
+                <input type="checkbox" id="opcao2" name="categoria1" data-mascarado="Cliente Relatou que: está sem conexão nenhuma, Informou que o roteador não está ligando">
                 🔥Roteador Não Liga
             </label><br>
-            <label> <input type="checkbox" id="opcao3" data-mascarado="Cliente Relatou que: *Orientação* sua Internet está Oscilando muito, conexão lenta">
+            <label> <input type="checkbox" id="opcao3" name="categoria1" data-mascarado="Cliente Relatou que: *Orientação* sua Internet está Oscilando muito, conexão lenta">
                 🫵Orientação
             </label><br>
             <label>
-                <input type="checkbox" id="opcao4" data-mascarado="Cliente Relatou que: precisa de Mudança de Ponto">
+                <input type="checkbox" id="opcao4" name="categoria1" data-mascarado="Cliente Relatou que: precisa de Mudança de Ponto">
                 🏡Mudança de Ponto
             </label><br>
             <label>
-                <input type="checkbox" id="opcao5" data-mascarado="Cliente Relatou que: Que sua Internet está Oscilando muito, conexão lenta, caindo varias vezes.">
+                <input type="checkbox" id="opcao5" name="categoria1" data-mascarado="Cliente Relatou que: Que sua Internet está Oscilando muito, conexão lenta, caindo varias vezes.">
                 📉Conexão Lenta/Oscilando (Atenuado)
             </label><br>
 
         <h3>🔩 Diagnóstico técnico:</h3>
         <label>
-                <input type="checkbox" id="opcao6" data-mascarado="Diagnóstico Técnico: Foi feito testes e verificado instalação e foi constatado que a Fibra está rompida">
+                <input type="checkbox" id="opcao6" name="categoria2" data-mascarado="Diagnóstico Técnico: Foi feito testes e verificado instalação e foi constatado que a Fibra está rompida">
                 🔌Fibra Rompida (Interno)
             </label><br>
             <label>
-                <input type="checkbox" id="opcao7" data-mascarado="Diagnóstico Técnico: Cliente está sem sinal, Drop Rompido.">
+                <input type="checkbox" id="opcao7" name="categoria2" data-mascarado="Diagnóstico Técnico: Cliente está sem sinal, Drop Rompido.">
                 🆘Drop Rompido (Externo)
             </label><br>
             <label>
-                <input type="checkbox" id="opcao11" data-mascarado="Diagnóstico Técnico: Foi feito testes, verificado instalação e o problema persistiu apresentando LUZ VERMELHA/LOS">
+                <input type="checkbox" id="opcao11" name="categoria2" data-mascarado="Diagnóstico Técnico: Foi feito testes, verificado instalação e o problema persistiu apresentando LUZ VERMELHA/LOS">
                 ❌Los/Luz vermelha
             </label><br>
             <label>
-                <input type="checkbox" id="opcao8" data-mascarado="Diagnóstico Técnico: *Orientação* Foi verificado instalação, Feito ajustes no roteador, testes de internet, cliente informa que problema persiste, Sinal Ok,Conexão OK.">
+                <input type="checkbox" id="opcao8" name="categoria2" data-mascarado="Diagnóstico Técnico: *Orientação* Foi verificado instalação, Feito ajustes no roteador, testes de internet, cliente informa que problema persiste, Sinal Ok,Conexão OK.">
                 🫵Orientação
             </label><br>
             <label>
-                <input type="checkbox" id="opcao9" data-mascarado="Diagnóstico Técnico: Cliente Foi informado dos custos para mudança de ponto e está ciente.">
+                <input type="checkbox" id="opcao9" name="categoria2" data-mascarado="Diagnóstico Técnico: Cliente Foi informado dos custos para mudança de ponto e está ciente.">
                 🏡Mudança de Ponto
             </label><br>
             <label>
-                <input type="checkbox" id="opcao10" data-mascarado="Diagnóstico Técnico: Foi feito testes e verificado instalação, feito ajustes em roteador e foi constatado que o sinal está Atenuado">
+                <input type="checkbox" id="opcao10" name="categoria2" data-mascarado="Diagnóstico Técnico: Foi feito testes e verificado instalação, feito ajustes em roteador e foi constatado que o sinal está Atenuado">
                 📉Sinal Atenuado
             </label><br>
             <label>
-                <input type="checkbox" id="opcao12" data-mascarado="Diagnóstico Técnico: Foi verificado instalação, foi testado em outras tomadas e o problema persistiu, roteador queimado">
+                <input type="checkbox" id="opcao12" name="categoria2" data-mascarado="Diagnóstico Técnico: Foi verificado instalação, foi testado em outras tomadas e o problema persistiu, roteador queimado">
                 🔥Roteador Queimado
             </label><br>
 
         <h3>Equipamento instalado:</h3>
         <label>
-            <input type="checkbox" id="opcao13" data-mascarado="Equipamento instalado: Huawei">
+            <input type="checkbox" id="opcao13" name="categoria3" data-mascarado="Equipamento instalado: Huawei">
             🖥️Huawei
         </label><br>
         <label>
-            <input type="checkbox" id="opcao14" data-mascarado="Equipamento instalado: IntelBras">
+            <input type="checkbox" id="opcao14" name="categoria3" data-mascarado="Equipamento instalado: IntelBras">
             📡IntelBras
         </label><br>
         <label>
-            <input type="checkbox" id="opcao15" data-mascarado="Equipamento instalado: Mercusys">
+            <input type="checkbox" id="opcao15" name="categoria3" data-mascarado="Equipamento instalado: Mercusys">
             🌐Mercusys
         </label><br>
         <label>
-            <input type="checkbox" id="opcao16" data-mascarado="Equipamento instalado: FW">
+            <input type="checkbox" id="opcao16" name="categoria3" data-mascarado="Equipamento instalado: FW">
             💻FW
         </label><br>
         <label>
-            <input type="checkbox" id="opcao17" data-mascarado="Equipamento instalado: Unee">
+            <input type="checkbox" id="opcao17" name="categoria3" data-mascarado="Equipamento instalado: Unee">
             🛜Unee
         </label><br>
 
