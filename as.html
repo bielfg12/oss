@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
      <link rel="icon" href="img/favicon.ico" type="img/favicon">
     <script>
@@ -18,9 +18,15 @@
             buttons.forEach(button => button.classList.toggle('dark-mode'));
         }
 
+        
+
         function gerarRelatorio() {
+
             const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             let relatorio = "";
+
+            const relField = document.getElementById("rel");
+            relatorio += `Cliente Relatou que: ${relField.value}\n`;
 
             checkboxes.forEach((checkbox) => {
                 relatorio += `${checkbox.dataset.mascarado}\n`;
@@ -72,6 +78,7 @@
             document.getElementById("data").value = "";
             document.getElementById("obs").value = "";
             document.getElementById("cto").value = "";
+            document.getElementById("rel").value = "";
 
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach((checkbox) => {
@@ -109,39 +116,15 @@
         <div class="logo-container">
             <img src="img/logo2.png" alt="Logo">
         </div>
-        <div class="checkbox-section">
-            <div class="checkbox-group">
-                <h3>📨 Cliente Relatou que:</h3>
-                <label>
-                    <input type="checkbox" id="opcao1" name="categoria1"
-                        data-mascarado="Cliente Relatou que: está enfrentando problemas de conexão. Não há sinal algum e que o roteador está com a luz vermelha acesa.">
-                    ❌Los/Luz Vermelha
-                </label><br>
-                <label>
-                    <input type="checkbox" id="opcao1" name="categoria1"
-                        data-mascarado="Cliente Relatou que: resetou seu roteador aos padrões de fabrica.">
-                     📵Roteador Resetado
-                </label><br>
-                <label>
-                    <input type="checkbox" id="opcao2" name="categoria1"
-                        data-mascarado="Cliente Relatou que: está sem conexão nenhuma, Informou que o roteador não está ligando">
-                    🔥Roteador Não Liga
-                </label><br>
-                <label> <input type="checkbox" id="opcao3" name="categoria1"
-                        data-mascarado="Cliente Relatou que: *Orientação* sua Internet está Oscilando muito, conexão lenta">
-                    🫵Orientação
-                </label><br>
-                <label>
-                    <input type="checkbox" id="opcao4" name="categoria1"
-                        data-mascarado="Cliente Relatou que: precisa de Mudança de Ponto">
-                    🏡Mudança de Ponto
-                </label><br>
-                <label>
-                    <input type="checkbox" id="opcao5" name="categoria1"
-                        data-mascarado="Cliente Relatou que: Que sua Internet está Oscilando muito, conexão lenta, caindo varias vezes.">
-                    📉Conexão Lenta/Oscilando (Atenuado)
-                </label><br>
+
+        <div class="input-row">
+            <div>
+                <h3>Cliente Relatou que:</h3>
+                <input type="text" id="rel" placeholder="Relato do cliente"><br>
             </div>
+        </div>
+
+        <div class="checkbox-section">
             <div class="checkbox-group">
                 <h3>🔩 Diagnóstico técnico:</h3>
                 <label>
@@ -235,6 +218,7 @@
                         💸Visita Técnica LOS
                 </label><br>
             </div>
+
             <div class="input-row">
                 <div>
                     <h3>📶 Sinal Óptico RX:</h3>
@@ -284,6 +268,7 @@
                         <option value="20">20</option>
                     </select><br>
                 </div>
+
                 <div class="input-row">
                     <div>
                         <h3>📍 CTO:</h3>
