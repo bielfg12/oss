@@ -30,7 +30,7 @@ form {
     width: 70%;
     backdrop-filter: blur(40px); /* Aplica desfoque ao fundo */
     max-width: 100%;
-    height: 60vh;
+    height: 75vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
