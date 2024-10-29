@@ -1,0 +1,152 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #474646;
+    background-image: url('https://i.postimg.cc/X7PyBVgp/wl.png');
+    background-size: cover;
+    background-position: center;
+    backdrop-filter: blur(40px); /* Aplica desfoque ao fundo */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    height: 120vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+form {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 60px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    width: 65%;
+    backdrop-filter: blur(40px); /* Aplica desfoque ao fundo */
+    max-width: 100%;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+h3 {
+    color: #ffffff;
+    font-size: 1em;
+    margin-bottom: 5px;
+}
+
+h1 {
+    color: #ffffff;
+    font-size: 0.8em;
+    margin-bottom: 5px;
+}
+
+/* Organização dos checkboxes em linha */
+.checkbox-section {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.checkbox-group {
+    flex: 1;
+    margin: 5px;
+}
+
+.checkbox-group label {
+    margin-right: 15px;
+    /* Espaçamento entre os checkboxes */
+    color: #ffffff;
+    font-size: 0.9em;
+}
+
+/* Organização dos dropdowns em linha */
+.input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.input-row>div {
+    flex: 1;
+}
+
+select,
+input[type="text"],
+input[type="tel"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-sizing: border-box;
+    font-size: 0.7em;
+}
+
+input[type="date"] {
+    width: 90%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-sizing: border-box;
+    align-items: center;
+    font-size: 0.7em;
+}
+
+.icon-button {
+    background-color:rgba(255, 204, 0, 0.0);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 18px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+}
+
+.icon-button i {
+    margin-right: 5px;
+}
+
+.icon-button:hover {
+    background-color: #ffdd01;
+}
+
+.limpar-relatorio {
+    background-color: rgba(255, 213, 0, 0);
+    color: #ffffff;
+}
+
+.limpar-relatorio:hover {
+    background-color: #6500ca;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+/* Logo Styles */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-container img {
+    height: 70px;
+    margin-top: 30px; /* Ajuste o tamanho da logo */ /* Espaço entre a logo e os botões */
+    justify-content: center;
+}
