@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+     <link rel="icon" href="img/favicon.ico" type="img/favicon">
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const form = document.querySelector('form');
+            form.classList.toggle('dark-mode');
+            const headings = document.querySelectorAll('h3');
+            headings.forEach(heading => heading.classList.toggle('dark-mode'));
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => button.classList.toggle('dark-mode'));
+        }
+
+        
+
+        function gerarRelatorio() {
+
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            let relatorio = "";
+
+            const relField = document.getElementById("rel");
+            relatorio += `Cliente Relatou que: ${relField.value}\n`;
+
+            checkboxes.forEach((checkbox) => {
+                relatorio += `${checkbox.dataset.mascarado}\n`;
+            });
+
+            const dropdown = document.getElementById("opcoesDropdown");
+            if (dropdown.selectedIndex > 0) {
+                relatorio += `Sinal óptico RX: ${dropdown.options[dropdown.selectedIndex].text}\n`;
+            }
+
+            const clientesDropdown = document.getElementById("clientes");
+            if (clientesDropdown.selectedIndex > 0) {
+                relatorio += `Quantidade de clientes na CTO: ${clientesDropdown.options[clientesDropdown.selectedIndex].text}\n`;
+            }
+
+            const ctoField = document.getElementById("cto");
+            relatorio += `Número da CTO: ${ctoField.value}\n`;
+
+            const telefoneField = document.getElementById("telefone");
+            relatorio += `Tel para contato: ${telefoneField.value}\n`;
+
+            const dataField = document.getElementById("data");
+            if (dataField.value) {
+                const dataValue = new Date(dataField.value);
+                const dia = String(dataValue.getDate()).padStart(2, '0');
+                const mes = String(dataValue.getMonth() + 1).padStart(2, '0');
+                const ano = dataValue.getFullYear();
+                relatorio += `Data da instalação: ${dia}/${mes}/${ano}\n`;
+            }
+
+            const obsField = document.getElementById("obs");
+            relatorio += `Observações: ${obsField.value}\n`;
+
+            // Cria um elemento textarea temporário para copiar o texto
+            const textarea = document.createElement("textarea");
+            textarea.value = relatorio;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+
+            alert("Relatório copiado:\n" + relatorio);
+        }
+
+        function limparFormulario() {
+            document.getElementById("opcoesDropdown").selectedIndex = 0;
+            document.getElementById("clientes").selectedIndex = 0;
+            document.getElementById("telefone").value = "";
+            document.getElementById("data").value = "";
+            document.getElementById("obs").value = "";
+            document.getElementById("cto").value = "";
+            document.getElementById("rel").value = "";
+
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = false;
+            });
+        }
+
+        function limitarSelecaoPorCategoria(categoria) {
+            const checkboxes = document.querySelectorAll(`input[name="${categoria}"]`);
+
+            checkboxes.forEach((checkbox) => {
+                checkbox.addEventListener('change', function () {
+                    // Desmarca todos os checkboxes, exceto o atual
+                    checkboxes.forEach((cb) => {
+                        if (cb !== checkbox) {
+                            cb.checked = false;
+                        }
+                    });
+                });
+            });
+        }
+
+        // Aplica a função para cada categoria
+        document.addEventListener('DOMContentLoaded', function () {
+            limitarSelecaoPorCategoria('categoria1');
+            limitarSelecaoPorCategoria('categoria2');
+            limitarSelecaoPorCategoria('categoria3');
+            limitarSelecaoPorCategoria('categoria4');
+        });
+    </script>
+</head>
+
+<body>
+    <form>
+        <div class="logo-container">
+            <img src="img/logo2.png" alt="Logo">
+        </div>
+
+        <div class="input-row">
+            <div>
+                <h3>Cliente Relatou que:</h3>
+                <input type="text" id="rel" placeholder="Relato do cliente"><br>
+            </div>
+        </div>
+
+        <div class="checkbox-section">
+            <div class="checkbox-group">
+                <h3>🔩 Diagnóstico técnico:</h3>
+                <label>
+                    <input type="checkbox" id="opcao6" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Foi feito testes e verificado instalação e foi constatado que a Fibra está rompida">
+                    🔌Fibra Rompida (Interno)
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao7" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Cliente está sem sinal, Drop Rompido.">
+                    🆘Drop Rompido (Externo)
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao6" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Foi verificado e orientado o cliente para fazer a  configuração do roteador novamente mas sem sucesso.">
+                    📵Roteador Resetado
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao11" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Foi feito testes, verificado instalação e o problema persistiu apresentando LUZ VERMELHA/LOS">
+                    ❌Los/Luz vermelha
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao11" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Foi feito testes, verificado instalação e o problema persistiu com roteador piscando o PON mas sem sinal, verificado historico de potência e foi constatado que cliente tem historico de sinal atenuado.">
+                    ✳️Pon Piscando Sem sinal
+                </label><br>
+                  <label>
+                    <input type="checkbox" id="opcao11" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Foi feito testes, verificado instalação e o problema persistiu com roteador piscando o PON, cliente com sinal mas sem conexão, verificado historico de potência e foi constatado que cliente tem historico de sinal atenuado.">
+                    ✳️Pon Piscando Com sinal
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao8" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: *Orientação* Foi verificado instalação, Feito ajustes no roteador, testes de internet, cliente informa que problema persiste, Sinal Ok,Conexão OK.">
+                    🫵Orientação
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao9" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Cliente Foi informado sobre tudo em relação a mudança de ponto.">
+                    🏡Mudança de Ponto
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao10" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Foi feito testes e verificado instalação e foi constatado que o sinal está muito atenuado">
+                    📉Sinal Atenuado
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao12" name="categoria2"
+                        data-mascarado="Diagnóstico Técnico: Foi verificado instalação, foi testado em outras tomadas e o problema persistiu, roteador não liga.">
+                    🔥Roteador Queimado
+                </label><br>
+            </div>
+            <div class="checkbox-group">
+                <h3>Equipamento instalado:</h3>
+                <label>
+                    <input type="checkbox" id="opcao13" name="categoria3"
+                        data-mascarado="Equipamento instalado: Huawei">
+                    🖥️Huawei
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao14" name="categoria3"
+                        data-mascarado="Equipamento instalado: IntelBras">
+                    📡IntelBras
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao15" name="categoria3"
+                        data-mascarado="Equipamento instalado: Mercusys">
+                    🌐Mercusys
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao16" name="categoria3" data-mascarado="Equipamento instalado: FW">
+                    💻FW
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao17" name="categoria3" data-mascarado="Equipamento instalado: Unee">
+                    📱Unee
+                </label><br>
+            </div>
+
+            <div class="checkbox-group">
+                <h3>💰Custos:</h3>
+                <label>
+                    <input type="checkbox" id="opcao6" name="categoria4"
+                        data-mascarado="Cliente ciente dos custos para mudança de ponto em caso do aproveitamento da fibra R$ 50,00 se não R$ 90,00 para troca de fibra , ">
+                        🏠Mudança de ponto Residêncial
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao6" name="categoria4"
+                        data-mascarado="Cliente ciente dos custos para mudança de ponto em caso do aproveitamento da fibra R$ 90,00 se não R$ 180,00 para troca de fibra , ">
+                        🏢Mudança de ponto Empresa
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao6" name="categoria4"
+                        data-mascarado="Cliente ciente dos custos em caso de visita improdutiva R$ 40,00">
+                        👀Visita Improdutiva
+                </label><br>
+                <label>
+                    <input type="checkbox" id="opcao6" name="categoria4"
+                        data-mascarado="Cliente ciente dos custos se caso for constatado que o problema é interno, R$ 40,00 ">
+                        💸Visita Técnica LOS
+                </label><br>
+            </div>
+
+            <div class="input-row">
+                <div>
+                    <h3>📶 Sinal Óptico RX:</h3>
+                    <select id="opcoesDropdown">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="Sem Sinal/LOS">Sem Sinal/LOS</option>
+                        <option value="Sinal Atenuado">Sinal Atenuado</option>
+                        <option value="-15 dBm">-15 dBm</option>
+                        <option value="-16 dBm">-16 dBm</option>
+                        <option value="-17 dBm">-17 dBm</option>
+                        <option value="-18 dBm">-18 dBm</option>
+                        <option value="-19 dBm">-19 dBm</option>
+                        <option value="-20 dBm">-20 dBm</option>
+                        <option value="-21 dBm">-21 dBm</option>
+                        <option value="-22 dBm">-22 dBm</option>
+                        <option value="-23 dBm">-23 dBm</option>
+                        <option value="-24 dBm">-24 dBm</option>
+                        <option value="-25 dBm">-25 dBm</option>
+                        <option value="-26 dBm">-26 dBm</option>
+                        <option value="-27 dBm">-27 dBm</option>
+                    </select><br>
+                </div>
+                <div>
+
+                    <h3>🔢 Clientes na CTO:</h3>
+                    <select id="clientes">
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select><br>
+                </div>
+
+                <div class="input-row">
+                    <div>
+                        <h3>📍 CTO:</h3>
+                        <input type="text" id="cto" placeholder="Digite o número da CTO"><br>
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div>
+                        <h3>📞 Telefone:</h3>
+                        <input type="tel" id="telefone" placeholder="(xx) xxxx-xxxx"><br>
+                    </div>
+                </div>
+                <div class="input-row">
+                    <div>
+
+                        <h1>📅 Data Instalação:</h1>
+                        <input type="date" id="data"><br>
+                        <div class="input-row">
+                        </div>
+                    </div>
+                    <div>
+                        <h3>✏️ Observações:</h3>
+                        <input type="text" id="obs" placeholder="Digite observações"><br>
+                        <div>
+                            <div class="button-container">
+                                <button type="button" onclick="gerarRelatorio()" class="icon-button">
+                                    <i class="fa-solid fa-clone"></i>
+                                </button>
+                                <button type="button" onclick="limparFormulario()" class="icon-button limpar-relatorio">
+                                    <i class="fa-solid fa-broom"></i>
+                                </button>
+                            </div>
+    </form>
+</body>
+
+</html>
