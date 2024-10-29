@@ -81,24 +81,14 @@ h1 {
 
 select,
 input[type="text"],
-input[type="tel"] {
+input[type="tel"],
+input[type="date"] {
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 12px;
     box-sizing: border-box;
-    font-size: 0.7em;
-}
-
-input[type="date"] {
-    width: 90%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    box-sizing: border-box;
-    align-items: center;
     font-size: 0.7em;
 }
 
