@@ -23,9 +23,13 @@
         </select>
         <button type="submit">Adicionar</button>
     </form>
+    <button id="exportData">Exportar Dados</button>
+    <input type="file" id="importFile" style="display:none;" />
+    <button id="importData">Importar Dados</button>
     <div id="map"></div>
     <script>
-        let participants = [];
+        let participants = JSON.parse(localStorage.getItem('participants')) || [];
+
         const cityCoordinates = {
             "São Paulo": [-23.5505, -46.6333],
             "Rio de Janeiro": [-22.9068, -43.1729],
@@ -64,6 +68,18 @@
         const map = L.map('map').setView([-23.5505, -46.6333], 5);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+        function addParticipantsToMap() {
+            participants.forEach(({ name, phone, city, status }) => {
+                if (cityCoordinates[city]) {
+                    const color = status === "participou" ? "green" : status === "nao_participou" ? "red" : "yellow";
+                    L.circleMarker(cityCoordinates[city], {
+                        color: color,
+                        radius: 8
+                    }).addTo(map).bindPopup(`<b>${name}</b><br>Telefone: ${phone}<br>Cidade: ${city}<br>Status: ${status}`);
+                }
+            });
+        }
+
         document.getElementById("participantForm").addEventListener("submit", function(event) {
             event.preventDefault();
             const name = document.getElementById("name").value;
@@ -72,19 +88,42 @@
             const status = document.getElementById("status").value;
             
             if (cityCoordinates[city]) {
-                const color = status === "participou" ? "green" : status === "nao_participou" ? "red" : "yellow";
                 participants.push({ name, phone, city, status });
-                
-                L.circleMarker(cityCoordinates[city], {
-                    color: color,
-                    radius: 8
-                }).addTo(map).bindPopup(`<b>${name}</b><br>Telefone: ${phone}<br>Cidade: ${city}<br>Status: ${status}`);
-                
-                document.getElementById("participantForm").reset();
+                localStorage.setItem('participants', JSON.stringify(participants));
+                location.reload();
             } else {
                 alert("Cidade não cadastrada no sistema.");
             }
         });
+
+        document.getElementById("exportData").addEventListener("click", function() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(participants));
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "participantes.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        });
+
+        document.getElementById("importData").addEventListener("click", function() {
+            document.getElementById("importFile").click();
+        });
+
+        document.getElementById("importFile").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    participants = JSON.parse(e.target.result);
+                    localStorage.setItem('participants', JSON.stringify(participants));
+                    location.reload();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        addParticipantsToMap();
     </script>
 </body>
 </html>
