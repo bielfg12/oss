@@ -255,7 +255,7 @@ async function loadParticipants() {
     }
 
     // Cria múltiplos marcadores para o mesmo grupo se houver mais de 10 participantes
-    const participantsPerMarker = 10;
+    const participantsPerMarker = 20;
     const totalMarkers = Math.ceil(group.participants.length / participantsPerMarker);
 
     for (let i = 0; i < totalMarkers; i++) {
