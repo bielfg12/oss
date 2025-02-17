@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Participantes</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
+    <title>Relatório de Participantes</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    <style>
+        #map { height: 500px; }
+    </style>
 </head>
 <body>
     <h1>Relatório de Participantes</h1>
-    
     <form id="participantForm">
         <input type="text" id="name" placeholder="Nome" required>
         <input type="text" id="phone" placeholder="Telefone" required>
@@ -21,105 +25,113 @@
         </select>
         <button type="submit">Adicionar</button>
     </form>
+    <button id="exportData">Exportar Dados</button>
+    <input type="file" id="importFile" style="display:none;" />
+    <button id="importData">Importar Dados</button>
+    <div id="map"></div>
+    
+    <script src="js/firebase-config.js"></script>
+    <script>
+        const db = firebase.firestore();
 
-    <h2>Lista de Participantes</h2>
-    <ul id="participantsList"></ul>
-
-    <h2>Mapa de São Paulo</h2>
-    <div id="map" style="height: 500px; width: 100%;"></div>
-
-    <script type="module" src="./js/firebase-config.js"></script>
-    <script type="module">
-        import { db } from "./js/firebase-config.js";
-        import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-
-        let map;
-        let markers = [];
-
-        // Coordenadas das cidades manualmente (São Paulo é um exemplo)
         const cityCoordinates = {
-            "São Paulo": { lat: -23.5505, lng: -46.6333 },
-            "Campinas": { lat: -23.1896, lng: -46.8978 },
-            "Santos": { lat: -23.9678, lng: -46.3289 }
-            // Adicione mais cidades e suas coordenadas conforme necessário
+            "São Paulo": [-23.5505, -46.6333],
+            "Rio de Janeiro": [-22.9068, -43.1729],
+            "Belo Horizonte": [-19.9167, -43.9345],
+            "Bauru": [-22.3147, -49.0606],
+            "Brotas": [-22.2846, -48.1254],
+            "Jaú": [-22.2965, -48.5592],
+            "Marília": [-22.2171, -49.9501],
+            "São Carlos": [-22.0047, -47.8977],
+            "Ribeirão Preto": [-21.1699, -47.8099],
+            "Araras": [-22.3572, -47.3842],
+            "Piracicaba": [-22.7338, -47.6476],
+            "Casa Branca": [-21.7708, -47.0869],
+            "Sorocaba": [-23.5015, -47.4526],
+            "Salto de Pirapora": [-23.6475, -47.5747],
+            "São Sebastião": [-23.7857, -45.4144],
+            "Ubatuba": [-23.4332, -45.0834],
+            "Londrina": [-23.3045, -51.1696],
+            "Palmas": [-10.1689, -48.3317],
+            "Cabreúva": [-23.3053, -47.1328],
+            "Botucatu": [-22.8837, -48.4441],
+            "Araraquara": [-21.7845, -48.1780],
+            "Campinas": [-22.9056, -47.0608],
+            "Valinhos": [-22.9706, -46.9956],
+            "Vinhedo": [-23.0292, -46.9757],
+            "Indaiatuba": [-23.0816, -47.2101],
+            "Itu": [-23.2641, -47.2993],
+            "Piedade": [-23.7134, -47.4254],
+            "Santos": [-23.9608, -46.3339],
+            "Curitiba": [-25.4284, -49.2733],
+            "Lages": [-27.8166, -50.3264],
+            "Monte Claro": [-16.7282, -43.8616],
+            "Petar": [-24.5970, -48.1662]
         };
 
-        // Inicializa o mapa
-        function initMap() {
-            map = L.map('map').setView([-23.5505, -46.6333], 12); // Centro de São Paulo
+        const map = L.map('map').setView([-23.5505, -46.6333], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+        async function addParticipantsToMap() {
+            const querySnapshot = await db.collection("participants").get();
+            querySnapshot.forEach((doc) => {
+                const { name, phone, city, status } = doc.data();
+                if (cityCoordinates[city]) {
+                    const color = status === "participou" ? "green" : status === "nao_participou" ? "red" : "yellow";
+                    L.circleMarker(cityCoordinates[city], {
+                        color: color,
+                        radius: 8
+                    }).addTo(map).bindPopup(`<b>${name}</b><br>Telefone: ${phone}<br>Cidade: ${city}<br>Status: ${status}`);
+                }
+            });
         }
 
-        // Adiciona marcador no mapa com base nas coordenadas
-        function addMarker(lat, lng, status) {
-            let color;
-            switch(status) {
-                case 'participou':
-                    color = 'green';
-                    break;
-                case 'nao_participou':
-                    color = 'red';
-                    break;
-                case 'participou_outros':
-                    color = 'yellow';
-                    break;
-            }
-            L.circleMarker([lat, lng], {
-                color: color,
-                radius: 8
-            }).addTo(map);
-        }
-
-        // Formulário de cadastro de participantes
         document.getElementById("participantForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             const name = document.getElementById("name").value;
             const phone = document.getElementById("phone").value;
             const city = document.getElementById("city").value;
             const status = document.getElementById("status").value;
-
-            try {
-                // Verifique se a cidade está no nosso objeto de coordenadas
-                const cityCoords = cityCoordinates[city];
-                if (!cityCoords) {
-                    alert("Cidade não encontrada no sistema. Por favor, adicione a coordenada.");
-                    return;
-                }
-
-                // Armazena as informações no Firestore
-                await addDoc(collection(db, "participants"), { name, phone, city, status, lat: cityCoords.lat, lng: cityCoords.lng });
-                alert("Participante adicionado!");
-                loadParticipants();
-            } catch (error) {
-                console.error("Erro ao adicionar participante:", error);
+            
+            if (cityCoordinates[city]) {
+                const docRef = await db.collection("participants").add({
+                    name, phone, city, status
+                });
+                console.log("Documento escrito com ID: ", docRef.id);
+                location.reload();
+            } else {
+                alert("Cidade não cadastrada no sistema.");
             }
         });
 
-        // Carregar participantes do Firestore
-        async function loadParticipants() {
-            const list = document.getElementById("participantsList");
-            list.innerHTML = "";
-
-            const querySnapshot = await getDocs(collection(db, "participants"));
-            querySnapshot.forEach((doc) => {
-                const participant = doc.data();
-                const li = document.createElement("li");
-                li.textContent = `${participant.name} - ${participant.phone} - ${participant.city} - ${participant.status}`;
-                list.appendChild(li);
-
-                // Adiciona o marcador no mapa
-                addMarker(participant.lat, participant.lng, participant.status);
-            });
-        }
-
-        // Inicializa a aplicação
-        document.addEventListener("DOMContentLoaded", () => {
-            initMap();
-            loadParticipants();
+        document.getElementById("exportData").addEventListener("click", function() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(participants));
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "participantes.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
         });
+
+        document.getElementById("importData").addEventListener("click", function() {
+            document.getElementById("importFile").click();
+        });
+
+        document.getElementById("importFile").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    participants = JSON.parse(e.target.result);
+                    localStorage.setItem('participants', JSON.stringify(participants));
+                    location.reload();
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        addParticipantsToMap();
     </script>
 </body>
 </html>
