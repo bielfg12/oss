@@ -200,18 +200,13 @@
         .openOn(map);
     });
 
-    // Função para carregar os participantes do Firestore, agrupando por cidade e status
+   // Função para carregar os participantes do Firestore, agrupando por cidade e status
 async function loadParticipants() {
   // Limpa os marcadores do cluster
   markersCluster.clearLayers();
 
   const querySnapshot = await getDocs(collection(db, "participants"));
   const groups = {}; // chave: "cidade_status"
-
-  // Inicializa os totais
-  let totalParticipou = 0;
-  let totalNaoParticipou = 0;
-  let totalParticipouOutros = 0;
 
   querySnapshot.forEach(doc => {
     const participant = doc.data();
@@ -225,22 +220,8 @@ async function loadParticipants() {
         };
       }
       groups[key].participants.push({ name: participant.name, phone: participant.phone });
-
-      // Incrementa os totais conforme o status
-      if (participant.status === "participou") {
-        totalParticipou++;
-      } else if (participant.status === "nao_participou") {
-        totalNaoParticipou++;
-      } else if (participant.status === "participou_outros") {
-        totalParticipouOutros++;
-      }
     }
   });
-
-  // Atualiza os totais no HTML
-  document.getElementById("totalParticipou").textContent = `Total que participou: ${totalParticipou}`;
-  document.getElementById("totalNaoParticipou").textContent = `Total que não participou: ${totalNaoParticipou}`;
-  document.getElementById("totalParticipouOutros").textContent = `Total que participou com outros: ${totalParticipouOutros}`;
 
   // Para cada grupo, cria um único marcador
   Object.keys(groups).forEach(key => {
@@ -256,17 +237,23 @@ async function loadParticipants() {
 
     const marker = L.circleMarker(cityCoordinates[group.city], {
       color: color,
-      radius: 8,
+      radius: Math.min(10 + group.participants.length / 10, 30),  // Aumenta o tamanho dependendo do número de participantes
       fillOpacity: 0.8
     });
+
     // Armazena as informações do grupo para uso no popup
     marker.options.participantGroup = group;
 
-    // Popup para exibir a lista dos participantes do grupo
-    let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul>`;
-    group.participants.forEach(p => {
+    // Limite de 10 participantes no pop-up inicialmente
+    let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul style="max-height: 200px; overflow-y: scroll;">`;
+    group.participants.slice(0, 10).forEach(p => {
       popupContent += `<li>${p.name} - ${p.phone}</li>`;
     });
+
+    if (group.participants.length > 10) {
+      popupContent += `<li><button onclick="showMore('${key}')">Ver mais (${group.participants.length - 10})</button></li>`;
+    }
+
     popupContent += '</ul>';
     marker.bindPopup(popupContent);
 
@@ -275,26 +262,38 @@ async function loadParticipants() {
   });
 }
 
-// Ao enviar o formulário, adiciona o participante ao Firestore e atualiza o mapa
-document.getElementById("participantForm").addEventListener("submit", async function (event) {
-  event.preventDefault();
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
-  const city = document.getElementById("city").value;
-  const status = document.getElementById("status").value;
+// Função para mostrar todos os participantes de um grupo ao clicar em "Ver Mais"
+function showMore(groupKey) {
+  const group = groups[groupKey];
+  let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul>`;
+  group.participants.forEach(p => {
+    popupContent += `<li>${p.name} - ${p.phone}</li>`;
+  });
+  popupContent += '</ul>';
+  
+  // Obtém o marcador correspondente ao grupo
+  const marker = markersCluster.getLayers().find(layer => layer.options.participantGroup === group);
+  
+  // Abre o pop-up com todos os participantes
+  marker.bindPopup(popupContent).openPopup();
+}
 
-  if (!city) {
-    alert("Por favor, selecione uma cidade.");
-    return;
-  }
+// Evento para exibir popup com a lista de participantes de um cluster
+markersCluster.on('clusterclick', function (a) {
+  const markers = a.layer.getAllChildMarkers();
+  let content = '<ul style="list-style:none; margin:0; padding:0;">';
+  markers.forEach(marker => {
+    const p = marker.options.participantGroup;
+    content += `<li style="padding:4px 0;">${p.city} - ${p.status}: ${p.participants.map(part => part.name + " (" + part.phone + ")").join(", ")}</li>`;
+  });
+  content += '</ul>';
+  L.popup()
+    .setLatLng(a.latlng)
+    .setContent(content)
+    .openOn(map);
 
-  try {
-    await addDoc(collection(db, "participants"), { name, phone, city, status });
-    alert("Participante adicionado!");
-    loadParticipants();  // Atualiza os marcadores no mapa
-  } catch (error) {
-    console.error("Erro ao adicionar participante:", error);
-  }
+  // Ajuste o zoom para a área do cluster
+  map.fitBounds(a.layer.getBounds());
 });
 
 // Carrega os participantes e os marcadores ao iniciar a página
