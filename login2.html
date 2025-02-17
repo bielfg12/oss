@@ -278,10 +278,12 @@ async function loadParticipants() {
 
       popupContent += '</ul>';
       
-      // Adiciona o evento de clique no marcador para abrir o popup
-      marker.on('click', function () {
-        marker.bindPopup(popupContent).openPopup();
-      });
+      // Adiciona o evento de clique no marcador para abrir o popup apenas para os grupos limitados a 10 participantes
+      if (participantsForThisMarker.length <= 10) {
+        marker.on('click', function () {
+          marker.bindPopup(popupContent).openPopup();
+        });
+      }
 
       // Adiciona o marcador ao grupo de clusters
       markersCluster.addLayer(marker);
@@ -313,7 +315,6 @@ document.getElementById("participantForm").addEventListener("submit", async func
 
 // Carrega os participantes e os marcadores ao iniciar a página
 document.addEventListener("DOMContentLoaded", loadParticipants);
-
 
   </script>
 </body>
