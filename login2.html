@@ -264,9 +264,9 @@ async function loadParticipants() {
     marker.options.participantGroup = group;
 
     // Pop-up com scroll
-    let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul style="max-height: 200px; overflow-y: scroll;">`;
+    let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul style="max-height: 200px; overflow-y: auto; list-style-type: none; padding: 0;">`;
     group.participants.slice(0, 10).forEach(p => {
-      popupContent += `<li>${p.name} - ${p.phone}</li>`;
+      popupContent += `<li style="padding: 5px 0;">${p.name} - ${p.phone}</li>`;
     });
 
     popupContent += '</ul>';
@@ -319,9 +319,6 @@ document.getElementById("participantForm").addEventListener("submit", async func
 
 // Carrega os participantes e os marcadores ao iniciar a página
 document.addEventListener("DOMContentLoaded", loadParticipants);
-
-
-
   </script>
 </body>
 </html>
