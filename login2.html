@@ -73,11 +73,38 @@
     <!-- Campo de seleção de cidade para evitar erros de digitação -->
     <select id="city" required>
       <option value="">Selecione a cidade</option>
-      <option value="São Paulo">São Paulo</option>
-      <option value="Bauru">Bauru</option>
-      <option value="Piracicaba">Piracicaba</option>
-      <option value="Campinas">Campinas</option>
-      <option value="Santos">Santos</option>
+<option value="São Paulo">São Paulo - SP</option>
+<option value="Rio de Janeiro">Rio de Janeiro - RJ</option>
+<option value="Belo Horizonte">Belo Horizonte - MG</option>
+<option value="Bauru">Bauru - SP</option>
+<option value="Brotas">Brotas - SP</option>
+<option value="Jaú">Jaú - SP</option>
+<option value="Marília">Marília - SP</option>
+<option value="São Carlos">São Carlos - SP</option>
+<option value="Ribeirão Preto">Ribeirão Preto - SP</option>
+<option value="Araras">Araras - SP</option>
+<option value="Piracicaba">Piracicaba - SP</option>
+<option value="Casa Branca">Casa Branca - SP</option>
+<option value="Sorocaba">Sorocaba - SP</option>
+<option value="Salto de Pirapora">Salto de Pirapora - SP</option>
+<option value="São Sebastião">São Sebastião - SP</option>
+<option value="Ubatuba">Ubatuba - SP</option>
+<option value="Londrina">Londrina - PR</option>
+<option value="Palmas">Palmas - TO</option>
+<option value="Cabreúva">Cabreúva - SP</option>
+<option value="Botucatu">Botucatu - SP</option>
+<option value="Araraquara">Araraquara - SP</option>
+<option value="Campinas">Campinas - SP</option>
+<option value="Valinhos">Valinhos - SP</option>
+<option value="Vinhedo">Vinhedo - SP</option>
+<option value="Indaiatuba">Indaiatuba - SP</option>
+<option value="Itu">Itu - SP</option>
+<option value="Piedade">Piedade - SP</option>
+<option value="Santos">Santos - SP</option>
+<option value="Curitiba">Curitiba - PR</option>
+<option value="Lages">Lages - SC</option>
+<option value="Monte Claro">Monte Claro - MG</option>
+<option value="Petar">Petar - SP</option>
     </select>
     <select id="status" required>
       <option value="participou">Participou</option>
@@ -103,11 +130,38 @@
 
     // Defina as coordenadas para as cidades (as chaves devem coincidir com as opções do <select>)
     const cityCoordinates = {
-      "São Paulo": [-23.5505, -46.6333],
-      "Bauru": [-22.3147, -49.0606],
-      "Piracicaba": [-22.7338, -47.6476],
-      "Campinas": [-22.9056, -47.0608],
-      "Santos": [-23.9608, -46.3339]
+            "São Paulo": [-23.5505, -46.6333],
+            "Rio de Janeiro": [-22.9068, -43.1729],
+            "Belo Horizonte": [-19.9167, -43.9345],
+            "Bauru": [-22.3147, -49.0606],
+            "Brotas": [-22.2846, -48.1254],
+            "Jaú": [-22.2965, -48.5592],
+            "Marília": [-22.2171, -49.9501],
+            "São Carlos": [-22.0047, -47.8977],
+            "Ribeirão Preto": [-21.1699, -47.8099],
+            "Araras": [-22.3572, -47.3842],
+            "Piracicaba": [-22.7338, -47.6476],
+            "Casa Branca": [-21.7708, -47.0869],
+            "Sorocaba": [-23.5015, -47.4526],
+            "Salto de Pirapora": [-23.6475, -47.5747],
+            "São Sebastião": [-23.7857, -45.4144],
+            "Ubatuba": [-23.4332, -45.0834],
+            "Londrina": [-23.3045, -51.1696],
+            "Palmas": [-10.1689, -48.3317],
+            "Cabreúva": [-23.3053, -47.1328],
+            "Botucatu": [-22.8837, -48.4441],
+            "Araraquara": [-21.7845, -48.1780],
+            "Campinas": [-22.9056, -47.0608],
+            "Valinhos": [-22.9706, -46.9956],
+            "Vinhedo": [-23.0292, -46.9757],
+            "Indaiatuba": [-23.0816, -47.2101],
+            "Itu": [-23.2641, -47.2993],
+            "Piedade": [-23.7134, -47.4254],
+            "Santos": [-23.9608, -46.3339],
+            "Curitiba": [-25.4284, -49.2733],
+            "Lages": [-27.8166, -50.3264],
+            "Monte Claro": [-16.7282, -43.8616],
+            "Petar": [-24.5970, -48.1662]
     };
 
     // Inicializa o mapa com Leaflet
