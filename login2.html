@@ -113,10 +113,14 @@
     </select>
     <button type="submit">Adicionar Participante</button>
   </form>
-
+  <!-- Totais de Participantes -->
+<div id="totals" style="margin-top: 20px; font-size: 18px; text-align: center;">
+  <p><span id="totalParticipou" style="color: green;">Total que participou: 0</span></p>
+  <p><span id="totalNaoParticipou" style="color: red;">Total que não participou: 0</span></p>
+  <p><span id="totalParticipouOutros" style="color: yellow;">Total que participou com outros: 0</span></p>
+</div>
   <!-- Mapa -->
   <div id="map"></div>
-
   <!-- Importa a configuração do Firebase -->
   <script type="module" src="./js/firebase-config.js"></script>
   <!-- Inclua o Leaflet JS -->
@@ -195,85 +199,104 @@
     });
 
     // Função para carregar os participantes do Firestore, agrupando por cidade e status
-    async function loadParticipants() {
-      // Limpa os marcadores do cluster
-      markersCluster.clearLayers();
+async function loadParticipants() {
+  // Limpa os marcadores do cluster
+  markersCluster.clearLayers();
 
-      const querySnapshot = await getDocs(collection(db, "participants"));
-      const groups = {}; // chave: "cidade_status"
+  const querySnapshot = await getDocs(collection(db, "participants"));
+  const groups = {}; // chave: "cidade_status"
 
-      querySnapshot.forEach(doc => {
-        const participant = doc.data();
-        if (cityCoordinates[participant.city]) {
-          const key = `${participant.city}_${participant.status}`;
-          if (!groups[key]) {
-            groups[key] = {
-              city: participant.city,
-              status: participant.status,
-              participants: []
-            };
-          }
-          groups[key].participants.push({ name: participant.name, phone: participant.phone });
-        }
-      });
+  // Inicializa os totais
+  let totalParticipou = 0;
+  let totalNaoParticipou = 0;
+  let totalParticipouOutros = 0;
 
-      // Para cada grupo, cria um único marcador
-      Object.keys(groups).forEach(key => {
-        const group = groups[key];
-        let color;
-        if (group.status === "participou") {
-          color = "green";
-        } else if (group.status === "nao_participou") {
-          color = "red";
-        } else { // "participou_outros"
-          color = "yellow";
-        }
+  querySnapshot.forEach(doc => {
+    const participant = doc.data();
+    if (cityCoordinates[participant.city]) {
+      const key = `${participant.city}_${participant.status}`;
+      if (!groups[key]) {
+        groups[key] = {
+          city: participant.city,
+          status: participant.status,
+          participants: []
+        };
+      }
+      groups[key].participants.push({ name: participant.name, phone: participant.phone });
 
-        const marker = L.circleMarker(cityCoordinates[group.city], {
-          color: color,
-          radius: 8,
-          fillOpacity: 0.8
-        });
-        // Armazena as informações do grupo para uso no popup
-        marker.options.participantGroup = group;
+      // Incrementa os totais conforme o status
+      if (participant.status === "participou") {
+        totalParticipou++;
+      } else if (participant.status === "nao_participou") {
+        totalNaoParticipou++;
+      } else if (participant.status === "participou_outros") {
+        totalParticipouOutros++;
+      }
+    }
+  });
 
-        // Popup para exibir a lista dos participantes do grupo
-        let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul>`;
-        group.participants.forEach(p => {
-          popupContent += `<li>${p.name} - ${p.phone}</li>`;
-        });
-        popupContent += '</ul>';
-        marker.bindPopup(popupContent);
+  // Atualiza os totais no HTML
+  document.getElementById("totalParticipou").textContent = `Total que participou: ${totalParticipou}`;
+  document.getElementById("totalNaoParticipou").textContent = `Total que não participou: ${totalNaoParticipou}`;
+  document.getElementById("totalParticipouOutros").textContent = `Total que participou com outros: ${totalParticipouOutros}`;
 
-        // Adiciona o marcador ao grupo de clusters
-        markersCluster.addLayer(marker);
-      });
+  // Para cada grupo, cria um único marcador
+  Object.keys(groups).forEach(key => {
+    const group = groups[key];
+    let color;
+    if (group.status === "participou") {
+      color = "green";
+    } else if (group.status === "nao_participou") {
+      color = "red";
+    } else { // "participou_outros"
+      color = "yellow";
     }
 
-    // Ao enviar o formulário, adiciona o participante ao Firestore e atualiza o mapa
-    document.getElementById("participantForm").addEventListener("submit", async function (event) {
-      event.preventDefault();
-      const name = document.getElementById("name").value;
-      const phone = document.getElementById("phone").value;
-      const city = document.getElementById("city").value;
-      const status = document.getElementById("status").value;
-
-      if (!city) {
-        alert("Por favor, selecione uma cidade.");
-        return;
-      }
-
-      try {
-        await addDoc(collection(db, "participants"), { name, phone, city, status });
-        alert("Participante adicionado!");
-        loadParticipants();  // Atualiza os marcadores no mapa
-      } catch (error) {
-        console.error("Erro ao adicionar participante:", error);
-      }
+    const marker = L.circleMarker(cityCoordinates[group.city], {
+      color: color,
+      radius: 8,
+      fillOpacity: 0.8
     });
+    // Armazena as informações do grupo para uso no popup
+    marker.options.participantGroup = group;
 
-    // Carrega os participantes e os marcadores ao iniciar a página
-    document.addEventListener("DOMContentLoaded", loadParticipants);
+    // Popup para exibir a lista dos participantes do grupo
+    let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul>`;
+    group.participants.forEach(p => {
+      popupContent += `<li>${p.name} - ${p.phone}</li>`;
+    });
+    popupContent += '</ul>';
+    marker.bindPopup(popupContent);
+
+    // Adiciona o marcador ao grupo de clusters
+    markersCluster.addLayer(marker);
+  });
+}
+
+// Ao enviar o formulário, adiciona o participante ao Firestore e atualiza o mapa
+document.getElementById("participantForm").addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const city = document.getElementById("city").value;
+  const status = document.getElementById("status").value;
+
+  if (!city) {
+    alert("Por favor, selecione uma cidade.");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "participants"), { name, phone, city, status });
+    alert("Participante adicionado!");
+    loadParticipants();  // Atualiza os marcadores no mapa
+  } catch (error) {
+    console.error("Erro ao adicionar participante:", error);
+  }
+});
+
+// Carrega os participantes e os marcadores ao iniciar a página
+document.addEventListener("DOMContentLoaded", loadParticipants);
   </script>
 </body>
 </html>
