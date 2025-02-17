@@ -94,12 +94,14 @@
   <script type="module" src="./js/firebase-config.js"></script>
   <!-- Inclua o Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <!-- Código de lógica -->
+  <!-- Leaflet MarkerCluster JS -->
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <!-- Código de Lógica -->
   <script type="module">
     import { db } from "./js/firebase-config.js";
     import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-    // Defina as coordenadas para as cidades (use as mesmas chaves do select)
+    // Defina as coordenadas para as cidades (as chaves devem coincidir com as opções do <select>)
     const cityCoordinates = {
       "São Paulo": [-23.5505, -46.6333],
       "Bauru": [-22.3147, -49.0606],
@@ -122,13 +124,14 @@
     });
     map.addLayer(markersCluster);
 
-    // Evento para exibir popup com lista de participantes de um cluster
+    // Evento para exibir popup com a lista de participantes de um cluster
     markersCluster.on('clusterclick', function (a) {
       const markers = a.layer.getAllChildMarkers();
       let content = '<ul style="list-style:none; margin:0; padding:0;">';
       markers.forEach(marker => {
-        const p = marker.options.participant;
-        content += `<li style="padding:4px 0;">${p.name} - ${p.phone}</li>`;
+        // Cada marcador já contém o popup com os participantes agrupados
+        const p = marker.options.participantGroup;
+        content += `<li style="padding:4px 0;">${p.city} - ${p.status}: ${p.participants.map(part => part.name + " (" + part.phone + ")").join(", ")}</li>`;
       });
       content += '</ul>';
       L.popup()
@@ -137,38 +140,59 @@
         .openOn(map);
     });
 
-    // Função para carregar os participantes do Firestore e adicionar os marcadores
+    // Função para carregar os participantes do Firestore, agrupando por cidade e status
     async function loadParticipants() {
       // Limpa os marcadores do cluster
       markersCluster.clearLayers();
 
       const querySnapshot = await getDocs(collection(db, "participants"));
-      querySnapshot.forEach((doc) => {
+      const groups = {}; // chave: "cidade_status"
+
+      querySnapshot.forEach(doc => {
         const participant = doc.data();
-
-        // Somente adiciona se houver coordenadas para a cidade selecionada
         if (cityCoordinates[participant.city]) {
-          let color;
-          if (participant.status === "participou") {
-            color = "green";
-          } else if (participant.status === "nao_participou") {
-            color = "red";
-          } else { // "participou_outros"
-            color = "yellow";
+          const key = `${participant.city}_${participant.status}`;
+          if (!groups[key]) {
+            groups[key] = {
+              city: participant.city,
+              status: participant.status,
+              participants: []
+            };
           }
-
-          const marker = L.circleMarker(cityCoordinates[participant.city], {
-            color: color,
-            radius: 8,
-            fillOpacity: 0.8
-          });
-          // Armazena informações do participante no marcador para uso no popup
-          marker.options.participant = participant;
-          marker.bindPopup(`<strong>${participant.name}</strong><br>Telefone: ${participant.phone}`);
-
-          // Adiciona o marcador ao grupo de clusters
-          markersCluster.addLayer(marker);
+          groups[key].participants.push({ name: participant.name, phone: participant.phone });
         }
+      });
+
+      // Para cada grupo, cria um único marcador
+      Object.keys(groups).forEach(key => {
+        const group = groups[key];
+        let color;
+        if (group.status === "participou") {
+          color = "green";
+        } else if (group.status === "nao_participou") {
+          color = "red";
+        } else { // "participou_outros"
+          color = "yellow";
+        }
+
+        const marker = L.circleMarker(cityCoordinates[group.city], {
+          color: color,
+          radius: 8,
+          fillOpacity: 0.8
+        });
+        // Armazena as informações do grupo para uso no popup
+        marker.options.participantGroup = group;
+
+        // Popup para exibir a lista dos participantes do grupo
+        let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul>`;
+        group.participants.forEach(p => {
+          popupContent += `<li>${p.name} - ${p.phone}</li>`;
+        });
+        popupContent += '</ul>';
+        marker.bindPopup(popupContent);
+
+        // Adiciona o marcador ao grupo de clusters
+        markersCluster.addLayer(marker);
       });
     }
 
@@ -197,7 +221,5 @@
     // Carrega os participantes e os marcadores ao iniciar a página
     document.addEventListener("DOMContentLoaded", loadParticipants);
   </script>
-  <!-- Leaflet MarkerCluster JS -->
-  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 </body>
 </html>
