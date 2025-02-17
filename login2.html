@@ -291,6 +291,9 @@ async function loadParticipants() {
       markersCluster.addLayer(marker);
     }
   });
+
+  // Atualiza o mapa para garantir que todos os marcadores estejam visíveis
+  map.invalidateSize();
 }
 
 // Evento para exibir popup com a lista de participantes de um cluster
@@ -335,7 +338,6 @@ document.getElementById("participantForm").addEventListener("submit", async func
 
 // Carrega os participantes e os marcadores ao iniciar a página
 document.addEventListener("DOMContentLoaded", loadParticipants);
-
   </script>
 </body>
 </html>
