@@ -200,7 +200,7 @@
         .openOn(map);
     });
 
- // Função para carregar os participantes do Firestore, agrupando por cidade e status
+// Função para carregar os participantes do Firestore, agrupando por cidade e status
 async function loadParticipants() {
   // Limpa os marcadores do cluster
   markersCluster.clearLayers();
@@ -258,10 +258,18 @@ async function loadParticipants() {
     const participantsPerMarker = 10;
     const totalMarkers = Math.ceil(group.participants.length / participantsPerMarker);
 
+    // Deslocamento inicial das coordenadas da cidade
+    let latitudeOffset = 0.0005; // Desloca um pouco para o norte
+    let longitudeOffset = 0.0005; // Desloca um pouco para o leste
+
     for (let i = 0; i < totalMarkers; i++) {
+      // Desloca as coordenadas de cada marcador
+      const newLat = cityCoordinates[group.city].lat + (latitudeOffset * i);
+      const newLng = cityCoordinates[group.city].lng + (longitudeOffset * i);
+
       const participantsForThisMarker = group.participants.slice(i * participantsPerMarker, (i + 1) * participantsPerMarker);
-      
-      const marker = L.circleMarker(cityCoordinates[group.city], {
+
+      const marker = L.circleMarker([newLat, newLng], {
         color: color,
         radius: 8,
         fillOpacity: 0.8
