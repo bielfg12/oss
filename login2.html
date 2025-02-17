@@ -200,7 +200,7 @@
         .openOn(map);
     });
 
-   // Função para carregar os participantes do Firestore, agrupando por cidade e status
+  // Função para carregar os participantes do Firestore, agrupando por cidade e status
 async function loadParticipants() {
   // Limpa os marcadores do cluster
   markersCluster.clearLayers();
@@ -285,6 +285,8 @@ async function loadParticipants() {
 function showMore(groupKey) {
   const group = groups[groupKey];
   let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul>`;
+  
+  // Exibe todos os participantes
   group.participants.forEach(p => {
     popupContent += `<li>${p.name} - ${p.phone}</li>`;
   });
@@ -339,6 +341,7 @@ document.getElementById("participantForm").addEventListener("submit", async func
 
 // Carrega os participantes e os marcadores ao iniciar a página
 document.addEventListener("DOMContentLoaded", loadParticipants);
+
 
   </script>
 </body>
