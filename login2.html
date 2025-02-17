@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Participantes</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
 </head>
 <body>
     <h1>Relatório de Participantes</h1>
@@ -23,12 +25,55 @@
     <h2>Lista de Participantes</h2>
     <ul id="participantsList"></ul>
 
-    <!-- Importação correta do Firebase -->
+    <h2>Mapa de São Paulo</h2>
+    <div id="map" style="height: 500px; width: 100%;"></div>
+
     <script type="module" src="./js/firebase-config.js"></script>
     <script type="module">
         import { db } from "./js/firebase-config.js";
         import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
+        let map;
+        let markers = [];
+
+        // Coordenadas das cidades manualmente (São Paulo é um exemplo)
+        const cityCoordinates = {
+            "São Paulo": { lat: -23.5505, lng: -46.6333 },
+            "Campinas": { lat: -23.1896, lng: -46.8978 },
+            "Santos": { lat: -23.9678, lng: -46.3289 }
+            // Adicione mais cidades e suas coordenadas conforme necessário
+        };
+
+        // Inicializa o mapa
+        function initMap() {
+            map = L.map('map').setView([-23.5505, -46.6333], 12); // Centro de São Paulo
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+        }
+
+        // Adiciona marcador no mapa com base nas coordenadas
+        function addMarker(lat, lng, status) {
+            let color;
+            switch(status) {
+                case 'participou':
+                    color = 'green';
+                    break;
+                case 'nao_participou':
+                    color = 'red';
+                    break;
+                case 'participou_outros':
+                    color = 'yellow';
+                    break;
+            }
+            L.circleMarker([lat, lng], {
+                color: color,
+                radius: 8
+            }).addTo(map);
+        }
+
+        // Formulário de cadastro de participantes
         document.getElementById("participantForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             const name = document.getElementById("name").value;
@@ -37,7 +82,15 @@
             const status = document.getElementById("status").value;
 
             try {
-                await addDoc(collection(db, "participants"), { name, phone, city, status });
+                // Verifique se a cidade está no nosso objeto de coordenadas
+                const cityCoords = cityCoordinates[city];
+                if (!cityCoords) {
+                    alert("Cidade não encontrada no sistema. Por favor, adicione a coordenada.");
+                    return;
+                }
+
+                // Armazena as informações no Firestore
+                await addDoc(collection(db, "participants"), { name, phone, city, status, lat: cityCoords.lat, lng: cityCoords.lng });
                 alert("Participante adicionado!");
                 loadParticipants();
             } catch (error) {
@@ -45,6 +98,7 @@
             }
         });
 
+        // Carregar participantes do Firestore
         async function loadParticipants() {
             const list = document.getElementById("participantsList");
             list.innerHTML = "";
@@ -55,10 +109,17 @@
                 const li = document.createElement("li");
                 li.textContent = `${participant.name} - ${participant.phone} - ${participant.city} - ${participant.status}`;
                 list.appendChild(li);
+
+                // Adiciona o marcador no mapa
+                addMarker(participant.lat, participant.lng, participant.status);
             });
         }
 
-        document.addEventListener("DOMContentLoaded", loadParticipants);
+        // Inicializa a aplicação
+        document.addEventListener("DOMContentLoaded", () => {
+            initMap();
+            loadParticipants();
+        });
     </script>
 </body>
 </html>
