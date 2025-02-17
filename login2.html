@@ -70,8 +70,16 @@
   <form id="participantForm">
     <input type="text" id="name" placeholder="Nome" required />
     <input type="text" id="phone" placeholder="Telefone" required />
-    <input type="text" id="city" placeholder="Cidade" required />
-    <select id="status">
+    <!-- Campo de seleção de cidade para evitar erros de digitação -->
+    <select id="city" required>
+      <option value="">Selecione a cidade</option>
+      <option value="São Paulo">São Paulo</option>
+      <option value="Bauru">Bauru</option>
+      <option value="Piracicaba">Piracicaba</option>
+      <option value="Campinas">Campinas</option>
+      <option value="Santos">Santos</option>
+    </select>
+    <select id="status" required>
       <option value="participou">Participou</option>
       <option value="nao_participou">Não Participou</option>
       <option value="participou_outros">Participou com Outros</option>
@@ -91,14 +99,13 @@
     import { db } from "./js/firebase-config.js";
     import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-    // Defina as coordenadas para as cidades (adicione conforme necessário)
+    // Defina as coordenadas para as cidades (use as mesmas chaves do select)
     const cityCoordinates = {
       "São Paulo": [-23.5505, -46.6333],
       "Bauru": [-22.3147, -49.0606],
       "Piracicaba": [-22.7338, -47.6476],
       "Campinas": [-22.9056, -47.0608],
       "Santos": [-23.9608, -46.3339]
-      // Adicione outras cidades conforme necessário
     };
 
     // Inicializa o mapa com Leaflet
@@ -139,7 +146,7 @@
       querySnapshot.forEach((doc) => {
         const participant = doc.data();
 
-        // Somente adiciona se houver coordenadas para a cidade
+        // Somente adiciona se houver coordenadas para a cidade selecionada
         if (cityCoordinates[participant.city]) {
           let color;
           if (participant.status === "participou") {
@@ -173,8 +180,8 @@
       const city = document.getElementById("city").value;
       const status = document.getElementById("status").value;
 
-      if (!cityCoordinates[city]) {
-        alert("Cidade não cadastrada no sistema.");
+      if (!city) {
+        alert("Por favor, selecione uma cidade.");
         return;
       }
 
