@@ -1,119 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Participantes</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places,visualization"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/markerclustererplus/2.1.1/markerclustererplus.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro de Participantes</title>
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <!-- MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+  <style>
+    #map { height: 500px; }
+  </style>
 </head>
 <body>
-    <h1>Relatório de Participantes</h1>
-    
-    <form id="participantForm">
-        <input type="text" id="name" placeholder="Nome" required>
-        <input type="text" id="phone" placeholder="Telefone" required>
-        <input type="text" id="city" placeholder="Cidade" required>
-        <select id="status">
-            <option value="participou">Participou</option>
-            <option value="nao_participou">Não Participou</option>
-            <option value="participou_outros">Participou com Outros</option>
-        </select>
-        <button type="submit">Adicionar</button>
-    </form>
+  <h1>Relatório de Participantes</h1>
+  
+  <form id="participantForm">
+    <input type="text" id="name" placeholder="Nome" required>
+    <input type="text" id="phone" placeholder="Telefone" required>
+    <input type="text" id="city" placeholder="Cidade" required>
+    <select id="status">
+      <option value="participou">Participou</option>
+      <option value="nao_participou">Não Participou</option>
+      <option value="participou_outros">Participou com Outros</option>
+    </select>
+    <button type="submit">Adicionar</button>
+  </form>
 
-    <h2>Lista de Participantes</h2>
-    <ul id="participantsList"></ul>
+  <h2>Lista de Participantes</h2>
+  <ul id="participantsList"></ul>
 
-    <div id="map" style="height: 500px; width: 100%;"></div>
+  <div id="map"></div>
 
-    <!-- Importando Firebase e Configuração -->
-    <script type="module" src="./js/firebase-config.js"></script>
-    <script type="module">
-        import { db } from "./js/firebase-config.js";
-        import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+  <!-- Importa o arquivo de configuração do Firebase (já configurado na sua pasta js/firebase-config.js) -->
+  <script type="module" src="./js/firebase-config.js"></script>
+  <!-- Firebase e Firestore -->
+  <script type="module">
+    import { db } from "./js/firebase-config.js";
+    import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-        const cityCoordinates = {
-            "São Paulo": { lat: -23.5505, lng: -46.6333 },
-            // Adicione mais cidades e suas coordenadas aqui
-        };
+    // Defina as coordenadas para as cidades (adicione conforme necessário)
+    const cityCoordinates = {
+      "São Paulo": [-23.5505, -46.6333],
+      "Bauru": [-22.3147, -49.0606],
+      "Piracicaba": [-22.7338, -47.6476],
+      "Campinas": [-22.9056, -47.0608],
+      "Santos": [-23.9608, -46.3339]
+      // Adicione outras cidades conforme necessário
+    };
 
-        let map;
-        let markerCluster;
+    // Inicializa o mapa do Leaflet centrado em São Paulo (ou região desejada)
+    const map = L.map('map').setView([-23.5505, -46.6333], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
 
-        // Inicializa o mapa
-        function initMap() {
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: -23.5505, lng: -46.6333 }, // Posição central (São Paulo)
-                zoom: 12
-            });
+    // Cria o grupo de clusters para os marcadores
+    const markersCluster = L.markerClusterGroup({
+      spiderfyOnMaxZoom: true,  // Se os marcadores estiverem exatamente no mesmo ponto, eles se dispersam
+      showCoverageOnHover: false,
+      zoomToBoundsOnClick: false  // Vamos customizar o clique para exibir uma lista
+    });
+    map.addLayer(markersCluster);
 
-            markerCluster = new MarkerClusterer(map, [], {
-                imagePath: "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"
-            });
+    // Quando um cluster for clicado, exibe um popup com a lista dos participantes daquele grupo
+    markersCluster.on('clusterclick', function (a) {
+      const markers = a.layer.getAllChildMarkers();
+      let content = '<ul>';
+      markers.forEach(marker => {
+        const p = marker.options.participant;
+        content += `<li>${p.name} - ${p.phone}</li>`;
+      });
+      content += '</ul>';
+      L.popup()
+        .setLatLng(a.latlng)
+        .setContent(content)
+        .openOn(map);
+    });
 
-            loadParticipants(); // Carrega os participantes ao iniciar
+    // Ao enviar o formulário, adiciona o participante no Firestore
+    document.getElementById("participantForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const name = document.getElementById("name").value;
+      const phone = document.getElementById("phone").value;
+      const city = document.getElementById("city").value;
+      const status = document.getElementById("status").value;
+
+      if (!cityCoordinates[city]) {
+        alert("Cidade não cadastrada no sistema.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "participants"), { name, phone, city, status });
+        alert("Participante adicionado!");
+        loadParticipants();  // Atualiza a lista e os marcadores
+      } catch (error) {
+        console.error("Erro ao adicionar participante:", error);
+      }
+    });
+
+    // Carrega os participantes do Firestore, atualiza a lista e adiciona os marcadores ao cluster
+    async function loadParticipants() {
+      // Atualiza a lista de participantes (HTML)
+      const list = document.getElementById("participantsList");
+      list.innerHTML = '';
+
+      // Limpa os marcadores do cluster
+      markersCluster.clearLayers();
+
+      const querySnapshot = await getDocs(collection(db, "participants"));
+      querySnapshot.forEach((doc) => {
+        const participant = doc.data();
+
+        // Atualiza a lista (ul) com os dados do participante
+        const li = document.createElement("li");
+        li.textContent = `${participant.name} - ${participant.phone} - ${participant.city} - ${participant.status}`;
+        list.appendChild(li);
+
+        // Se existir coordenada para a cidade, cria o marcador
+        if (cityCoordinates[participant.city]) {
+          // Define a cor do marcador conforme o status
+          let color;
+          if (participant.status === "participou") {
+            color = "green";
+          } else if (participant.status === "nao_participou") {
+            color = "red";
+          } else { // "participou_outros"
+            color = "yellow";
+          }
+
+          // Cria um marcador (usando circleMarker para facilitar a customização da cor)
+          const marker = L.circleMarker(cityCoordinates[participant.city], {
+            color: color,
+            radius: 8,
+            fillOpacity: 0.8
+          });
+          // Armazena as informações do participante nas opções do marcador
+          marker.options.participant = participant;
+
+          // Para cada marcador individual, vincula um popup com nome e telefone
+          marker.bindPopup(`<strong>${participant.name}</strong><br>Telefone: ${participant.phone}`);
+
+          // Adiciona o marcador ao grupo de clusters
+          markersCluster.addLayer(marker);
         }
+      });
+    }
 
-        // Formulário para adicionar participante
-        document.getElementById("participantForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            const name = document.getElementById("name").value;
-            const phone = document.getElementById("phone").value;
-            const city = document.getElementById("city").value;
-            const status = document.getElementById("status").value;
+    // Carrega os participantes e os marcadores ao iniciar a página
+    document.addEventListener("DOMContentLoaded", loadParticipants);
+  </script>
 
-            try {
-                await addDoc(collection(db, "participants"), { name, phone, city, status });
-                alert("Participante adicionado!");
-                loadParticipants(); // Atualiza lista sem precisar recarregar a página
-            } catch (error) {
-                console.error("Erro ao adicionar participante:", error);
-            }
-        });
-
-        // Função para carregar os participantes e adicionar marcadores
-        async function loadParticipants() {
-            const querySnapshot = await getDocs(collection(db, "participants"));
-            querySnapshot.forEach((doc) => {
-                const participant = doc.data();
-                const city = participant.city;
-                const status = participant.status;
-
-                // Se a cidade for conhecida, adiciona no mapa
-                if (cityCoordinates[city]) {
-                    const position = cityCoordinates[city];
-                    const color = status === "participou" ? "green" : (status === "nao_participou" ? "red" : "yellow");
-
-                    const marker = new google.maps.Marker({
-                        position,
-                        map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            fillColor: color,
-                            fillOpacity: 0.8,
-                            strokeWeight: 0,
-                            scale: 8
-                        }
-                    });
-
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: `<h3>${participant.name}</h3><p>Telefone: ${participant.phone}</p>`
-                    });
-
-                    // Quando o marcador é clicado, exibe o popup com as informações
-                    marker.addListener("click", () => {
-                        infoWindow.open(map, marker);
-                    });
-
-                    // Adiciona o marcador ao cluster
-                    markerCluster.addMarker(marker);
-                }
-            });
-        }
-
-        // Carrega o mapa ao iniciar a página
-        document.addEventListener("DOMContentLoaded", initMap);
-    </script>
+  <!-- Inclua os scripts do Leaflet e do MarkerCluster (eles podem ser carregados após o seu script de lógica) -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 </body>
 </html>
