@@ -23,13 +23,12 @@
     <h2>Lista de Participantes</h2>
     <ul id="participantsList"></ul>
 
-    <!-- Importando Firebase e Configuração -->
+    <!-- Importação do Firebase e Código -->
     <script type="module" src="./js/firebase-config.js"></script>
     <script type="module">
         import { db } from "./js/firebase-config.js";
         import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-        // Formulário para adicionar participante
         document.getElementById("participantForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             const name = document.getElementById("name").value;
@@ -40,16 +39,15 @@
             try {
                 await addDoc(collection(db, "participants"), { name, phone, city, status });
                 alert("Participante adicionado!");
-                loadParticipants(); // Atualiza lista sem precisar recarregar a página
+                loadParticipants();
             } catch (error) {
                 console.error("Erro ao adicionar participante:", error);
             }
         });
 
-        // Função para carregar os participantes
         async function loadParticipants() {
             const list = document.getElementById("participantsList");
-            list.innerHTML = ""; // Limpa a lista
+            list.innerHTML = "";
 
             const querySnapshot = await getDocs(collection(db, "participants"));
             querySnapshot.forEach((doc) => {
@@ -60,7 +58,6 @@
             });
         }
 
-        // Carrega participantes ao iniciar
         document.addEventListener("DOMContentLoaded", loadParticipants);
     </script>
 </body>
