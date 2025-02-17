@@ -260,16 +260,8 @@ async function loadParticipants() {
 
     for (let i = 0; i < totalMarkers; i++) {
       const participantsForThisMarker = group.participants.slice(i * participantsPerMarker, (i + 1) * participantsPerMarker);
-
-      // Calcula a posição de cada novo marcador para que eles fiquem afastados uns dos outros
-      const offsetX = (i % 3) * 0.002; // Ajuste no eixo X (horizontal)
-      const offsetY = Math.floor(i / 3) * 0.002; // Ajuste no eixo Y (vertical)
-      const latLng = [
-        cityCoordinates[group.city][0] + offsetY,
-        cityCoordinates[group.city][1] + offsetX
-      ];
-
-      const marker = L.circleMarker(latLng, {
+      
+      const marker = L.circleMarker(cityCoordinates[group.city], {
         color: color,
         radius: 8,
         fillOpacity: 0.8
@@ -285,17 +277,31 @@ async function loadParticipants() {
       });
 
       popupContent += '</ul>';
-
-      // Adiciona o evento de clique no marcador para abrir o popup
-      marker.on('click', function () {
-        marker.bindPopup(popupContent).openPopup();
-      });
+      marker.bindPopup(popupContent);
 
       // Adiciona o marcador ao grupo de clusters
       markersCluster.addLayer(marker);
     }
   });
 }
+
+// Evento para exibir popup com a lista de participantes de um cluster
+markersCluster.on('clusterclick', function (a) {
+  const markers = a.layer.getAllChildMarkers();
+  let content = '<ul style="list-style:none; margin:0; padding:0;">';
+  markers.forEach(marker => {
+    const p = marker.options.participantGroup;
+    content += `<li style="padding:4px 0;">${p.city} - ${p.status}: ${p.participants.map(part => part.name + " (" + part.phone + ")").join(", ")}</li>`;
+  });
+  content += '</ul>';
+  L.popup()
+    .setLatLng(a.latlng)
+    .setContent(content)
+    .openOn(map);
+
+  // Ajuste o zoom para a área do cluster
+  map.fitBounds(a.layer.getBounds());
+});
 
 // Ao enviar o formulário, adiciona o participante ao Firestore e atualiza o mapa
 document.getElementById("participantForm").addEventListener("submit", async function (event) {
