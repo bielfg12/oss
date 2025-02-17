@@ -1,40 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cadastro de Participantes</title>
+  <!-- Fontes e CSS Moderno -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <!-- MarkerCluster CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
   <style>
-    #map { height: 500px; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f7f9fc;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-top: 20px;
+      color: #333;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      width: 90%;
+      max-width: 500px;
+    }
+    form input, form select, form button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    form button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    form button:hover {
+      background: #0056b3;
+    }
+    #map {
+      width: 90%;
+      max-width: 1000px;
+      height: 500px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
-  <h1>Relatório de Participantes</h1>
+  <h1>Cadastro de Participantes</h1>
   
   <form id="participantForm">
-    <input type="text" id="name" placeholder="Nome" required>
-    <input type="text" id="phone" placeholder="Telefone" required>
-    <input type="text" id="city" placeholder="Cidade" required>
+    <input type="text" id="name" placeholder="Nome" required />
+    <input type="text" id="phone" placeholder="Telefone" required />
+    <input type="text" id="city" placeholder="Cidade" required />
     <select id="status">
       <option value="participou">Participou</option>
       <option value="nao_participou">Não Participou</option>
       <option value="participou_outros">Participou com Outros</option>
     </select>
-    <button type="submit">Adicionar</button>
+    <button type="submit">Adicionar Participante</button>
   </form>
 
-  <h2>Lista de Participantes</h2>
-  <ul id="participantsList"></ul>
-
+  <!-- Mapa -->
   <div id="map"></div>
 
-  <!-- Importa o arquivo de configuração do Firebase (já configurado na sua pasta js/firebase-config.js) -->
+  <!-- Importa a configuração do Firebase -->
   <script type="module" src="./js/firebase-config.js"></script>
-  <!-- Firebase e Firestore -->
+  <!-- Código de lógica -->
   <script type="module">
     import { db } from "./js/firebase-config.js";
     import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
@@ -49,7 +99,7 @@
       // Adicione outras cidades conforme necessário
     };
 
-    // Inicializa o mapa do Leaflet centrado em São Paulo (ou região desejada)
+    // Inicializa o mapa com Leaflet
     const map = L.map('map').setView([-23.5505, -46.6333], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -57,19 +107,19 @@
 
     // Cria o grupo de clusters para os marcadores
     const markersCluster = L.markerClusterGroup({
-      spiderfyOnMaxZoom: true,  // Se os marcadores estiverem exatamente no mesmo ponto, eles se dispersam
+      spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
-      zoomToBoundsOnClick: false  // Vamos customizar o clique para exibir uma lista
+      zoomToBoundsOnClick: false
     });
     map.addLayer(markersCluster);
 
-    // Quando um cluster for clicado, exibe um popup com a lista dos participantes daquele grupo
+    // Evento para exibir popup com lista de participantes de um cluster
     markersCluster.on('clusterclick', function (a) {
       const markers = a.layer.getAllChildMarkers();
-      let content = '<ul>';
+      let content = '<ul style="list-style:none; margin:0; padding:0;">';
       markers.forEach(marker => {
         const p = marker.options.participant;
-        content += `<li>${p.name} - ${p.phone}</li>`;
+        content += `<li style="padding:4px 0;">${p.name} - ${p.phone}</li>`;
       });
       content += '</ul>';
       L.popup()
@@ -78,7 +128,42 @@
         .openOn(map);
     });
 
-    // Ao enviar o formulário, adiciona o participante no Firestore
+    // Função para carregar os participantes do Firestore e adicionar os marcadores
+    async function loadParticipants() {
+      // Limpa os marcadores do cluster
+      markersCluster.clearLayers();
+
+      const querySnapshot = await getDocs(collection(db, "participants"));
+      querySnapshot.forEach((doc) => {
+        const participant = doc.data();
+
+        // Somente adiciona se houver coordenadas para a cidade
+        if (cityCoordinates[participant.city]) {
+          let color;
+          if (participant.status === "participou") {
+            color = "green";
+          } else if (participant.status === "nao_participou") {
+            color = "red";
+          } else { // "participou_outros"
+            color = "yellow";
+          }
+
+          const marker = L.circleMarker(cityCoordinates[participant.city], {
+            color: color,
+            radius: 8,
+            fillOpacity: 0.8
+          });
+          // Armazena informações do participante no marcador para uso no popup
+          marker.options.participant = participant;
+          marker.bindPopup(`<strong>${participant.name}</strong><br>Telefone: ${participant.phone}`);
+
+          // Adiciona o marcador ao grupo de clusters
+          markersCluster.addLayer(marker);
+        }
+      });
+    }
+
+    // Ao enviar o formulário, adiciona o participante ao Firestore e atualiza o mapa
     document.getElementById("participantForm").addEventListener("submit", async function (event) {
       event.preventDefault();
       const name = document.getElementById("name").value;
@@ -94,66 +179,16 @@
       try {
         await addDoc(collection(db, "participants"), { name, phone, city, status });
         alert("Participante adicionado!");
-        loadParticipants();  // Atualiza a lista e os marcadores
+        loadParticipants();  // Atualiza os marcadores no mapa
       } catch (error) {
         console.error("Erro ao adicionar participante:", error);
       }
     });
 
-    // Carrega os participantes do Firestore, atualiza a lista e adiciona os marcadores ao cluster
-    async function loadParticipants() {
-      // Atualiza a lista de participantes (HTML)
-      const list = document.getElementById("participantsList");
-      list.innerHTML = '';
-
-      // Limpa os marcadores do cluster
-      markersCluster.clearLayers();
-
-      const querySnapshot = await getDocs(collection(db, "participants"));
-      querySnapshot.forEach((doc) => {
-        const participant = doc.data();
-
-        // Atualiza a lista (ul) com os dados do participante
-        const li = document.createElement("li");
-        li.textContent = `${participant.name} - ${participant.phone} - ${participant.city} - ${participant.status}`;
-        list.appendChild(li);
-
-        // Se existir coordenada para a cidade, cria o marcador
-        if (cityCoordinates[participant.city]) {
-          // Define a cor do marcador conforme o status
-          let color;
-          if (participant.status === "participou") {
-            color = "green";
-          } else if (participant.status === "nao_participou") {
-            color = "red";
-          } else { // "participou_outros"
-            color = "yellow";
-          }
-
-          // Cria um marcador (usando circleMarker para facilitar a customização da cor)
-          const marker = L.circleMarker(cityCoordinates[participant.city], {
-            color: color,
-            radius: 8,
-            fillOpacity: 0.8
-          });
-          // Armazena as informações do participante nas opções do marcador
-          marker.options.participant = participant;
-
-          // Para cada marcador individual, vincula um popup com nome e telefone
-          marker.bindPopup(`<strong>${participant.name}</strong><br>Telefone: ${participant.phone}`);
-
-          // Adiciona o marcador ao grupo de clusters
-          markersCluster.addLayer(marker);
-        }
-      });
-    }
-
     // Carrega os participantes e os marcadores ao iniciar a página
     document.addEventListener("DOMContentLoaded", loadParticipants);
   </script>
-
-  <!-- Inclua os scripts do Leaflet e do MarkerCluster (eles podem ser carregados após o seu script de lógica) -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet MarkerCluster JS -->
   <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 </body>
 </html>
