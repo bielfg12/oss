@@ -260,8 +260,16 @@ async function loadParticipants() {
 
     for (let i = 0; i < totalMarkers; i++) {
       const participantsForThisMarker = group.participants.slice(i * participantsPerMarker, (i + 1) * participantsPerMarker);
-      
-      const marker = L.circleMarker(cityCoordinates[group.city], {
+
+      // Calcula a posição de cada novo marcador para que eles fiquem afastados uns dos outros
+      const offsetX = (i % 3) * 0.002; // Ajuste no eixo X (horizontal)
+      const offsetY = Math.floor(i / 3) * 0.002; // Ajuste no eixo Y (vertical)
+      const latLng = [
+        cityCoordinates[group.city][0] + offsetY,
+        cityCoordinates[group.city][1] + offsetX
+      ];
+
+      const marker = L.circleMarker(latLng, {
         color: color,
         radius: 8,
         fillOpacity: 0.8
@@ -277,13 +285,11 @@ async function loadParticipants() {
       });
 
       popupContent += '</ul>';
-      
-      // Adiciona o evento de clique no marcador para abrir o popup apenas para os grupos limitados a 10 participantes
-      if (participantsForThisMarker.length <= 10) {
-        marker.on('click', function () {
-          marker.bindPopup(popupContent).openPopup();
-        });
-      }
+
+      // Adiciona o evento de clique no marcador para abrir o popup
+      marker.on('click', function () {
+        marker.bindPopup(popupContent).openPopup();
+      });
 
       // Adiciona o marcador ao grupo de clusters
       markersCluster.addLayer(marker);
@@ -315,6 +321,7 @@ document.getElementById("participantForm").addEventListener("submit", async func
 
 // Carrega os participantes e os marcadores ao iniciar a página
 document.addEventListener("DOMContentLoaded", loadParticipants);
+
 
   </script>
 </body>
