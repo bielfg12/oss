@@ -242,7 +242,7 @@ async function loadParticipants() {
   document.getElementById("totalNaoParticipou").textContent = `Total que não participou: ${totalNaoParticipou}`;
   document.getElementById("totalParticipouOutros").textContent = `Total que participou com outros: ${totalParticipouOutros}`;
 
-  // Para cada grupo, cria um único marcador
+  // Para cada grupo, cria múltiplos marcadores se houver mais de 10 participantes
   Object.keys(groups).forEach(key => {
     const group = groups[key];
     let color;
@@ -254,26 +254,34 @@ async function loadParticipants() {
       color = "yellow";
     }
 
-    const marker = L.circleMarker(cityCoordinates[group.city], {
-      color: color,
-      radius: 8,
-      fillOpacity: 0.8
-    });
+    // Cria múltiplos marcadores para o mesmo grupo se houver mais de 10 participantes
+    const participantsPerMarker = 10;
+    const totalMarkers = Math.ceil(group.participants.length / participantsPerMarker);
 
-    // Armazena as informações do grupo para uso no popup
-    marker.options.participantGroup = group;
+    for (let i = 0; i < totalMarkers; i++) {
+      const participantsForThisMarker = group.participants.slice(i * participantsPerMarker, (i + 1) * participantsPerMarker);
+      
+      const marker = L.circleMarker(cityCoordinates[group.city], {
+        color: color,
+        radius: 8,
+        fillOpacity: 0.8
+      });
 
-    // Pop-up com scroll
-    let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul style="max-height: 200px; overflow-y: auto; list-style-type: none; padding: 0;">`;
-    group.participants.slice(0, 10).forEach(p => {
-      popupContent += `<li style="padding: 5px 0;">${p.name} - ${p.phone}</li>`;
-    });
+      // Armazena as informações do grupo para uso no popup
+      marker.options.participantGroup = group;
 
-    popupContent += '</ul>';
-    marker.bindPopup(popupContent);
+      // Pop-up com scroll
+      let popupContent = `<strong>${group.city} (${group.status})</strong><br><ul style="max-height: 200px; overflow-y: auto; list-style-type: none; padding: 0;">`;
+      participantsForThisMarker.forEach(p => {
+        popupContent += `<li style="padding: 5px 0;">${p.name} - ${p.phone}</li>`;
+      });
 
-    // Adiciona o marcador ao grupo de clusters
-    markersCluster.addLayer(marker);
+      popupContent += '</ul>';
+      marker.bindPopup(popupContent);
+
+      // Adiciona o marcador ao grupo de clusters
+      markersCluster.addLayer(marker);
+    }
   });
 }
 
@@ -319,6 +327,7 @@ document.getElementById("participantForm").addEventListener("submit", async func
 
 // Carrega os participantes e os marcadores ao iniciar a página
 document.addEventListener("DOMContentLoaded", loadParticipants);
+
   </script>
 </body>
 </html>
