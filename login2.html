@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Participantes</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
     <h1>Relatório de Participantes</h1>
@@ -23,11 +25,54 @@
     <h2>Lista de Participantes</h2>
     <ul id="participantsList"></ul>
 
+    <!-- Mapa -->
+    <div id="map" style="height: 500px;"></div>
+
     <!-- Importando Firebase e Configuração -->
     <script type="module" src="./js/firebase-config.js"></script>
     <script type="module">
         import { db } from "./js/firebase-config.js";
         import { collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+        // Coordenadas das cidades do estado de São Paulo
+        const cityCoordinates = {
+            "São Paulo": [-23.5505, -46.6333],
+            "Rio de Janeiro": [-22.9068, -43.1729],
+            "Belo Horizonte": [-19.9167, -43.9345],
+            "Bauru": [-22.3147, -49.0606],
+            "Brotas": [-22.2846, -48.1254],
+            "Jaú": [-22.2965, -48.5592],
+            "Marília": [-22.2171, -49.9501],
+            "São Carlos": [-22.0047, -47.8977],
+            "Ribeirão Preto": [-21.1699, -47.8099],
+            "Araras": [-22.3572, -47.3842],
+            "Piracicaba": [-22.7338, -47.6476],
+            "Casa Branca": [-21.7708, -47.0869],
+            "Sorocaba": [-23.5015, -47.4526],
+            "Salto de Pirapora": [-23.6475, -47.5747],
+            "São Sebastião": [-23.7857, -45.4144],
+            "Ubatuba": [-23.4332, -45.0834],
+            "Londrina": [-23.3045, -51.1696],
+            "Palmas": [-10.1689, -48.3317],
+            "Cabreúva": [-23.3053, -47.1328],
+            "Botucatu": [-22.8837, -48.4441],
+            "Araraquara": [-21.7845, -48.1780],
+            "Campinas": [-22.9056, -47.0608],
+            "Valinhos": [-22.9706, -46.9956],
+            "Vinhedo": [-23.0292, -46.9757],
+            "Indaiatuba": [-23.0816, -47.2101],
+            "Itu": [-23.2641, -47.2993],
+            "Piedade": [-23.7134, -47.4254],
+            "Santos": [-23.9608, -46.3339],
+            "Curitiba": [-25.4284, -49.2733],
+            "Lages": [-27.8166, -50.3264],
+            "Monte Claro": [-16.7282, -43.8616],
+            "Petar": [-24.5970, -48.1662]
+        };
+
+        // Inicializando o mapa
+        const map = L.map('map').setView([-23.5505, -46.6333], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         // Formulário para adicionar participante
         document.getElementById("participantForm").addEventListener("submit", async function(event) {
@@ -41,12 +86,13 @@
                 await addDoc(collection(db, "participants"), { name, phone, city, status });
                 alert("Participante adicionado!");
                 loadParticipants(); // Atualiza lista sem precisar recarregar a página
+                addMarkers(); // Atualiza os marcadores no mapa
             } catch (error) {
                 console.error("Erro ao adicionar participante:", error);
             }
         });
 
-        // Função para carregar os participantes
+        // Função para carregar os participantes e exibir no mapa
         async function loadParticipants() {
             const list = document.getElementById("participantsList");
             list.innerHTML = ""; // Limpa a lista
@@ -60,8 +106,28 @@
             });
         }
 
-        // Carrega participantes ao iniciar
-        document.addEventListener("DOMContentLoaded", loadParticipants);
+        // Função para adicionar os marcadores no mapa com base no status
+        async function addMarkers() {
+            const querySnapshot = await getDocs(collection(db, "participants"));
+            querySnapshot.forEach((doc) => {
+                const participant = doc.data();
+                const { city, status } = participant;
+
+                if (cityCoordinates[city]) {
+                    const color = status === "participou" ? "green" : status === "nao_participou" ? "red" : "yellow";
+                    L.circleMarker(cityCoordinates[city], {
+                        color: color,
+                        radius: 8
+                    }).addTo(map).bindPopup(`<b>${participant.name}</b><br>Telefone: ${participant.phone}<br>Cidade: ${city}<br>Status: ${status}`);
+                }
+            });
+        }
+
+        // Carrega participantes e marcadores ao iniciar
+        document.addEventListener("DOMContentLoaded", function() {
+            loadParticipants();
+            addMarkers();
+        });
     </script>
 </body>
 </html>
