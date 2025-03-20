@@ -3,13 +3,14 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.4.0/firebase
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDTm9W1qwFNmWNJOt4bfbkTHIZHfLWnF5g",
-    authDomain: "site-25191.firebaseapp.com",
-    projectId: "site-25191",
-    storageBucket: "site-25191.firebasestorage.app",
-    messagingSenderId: "683821139505",
-    appId: "1:683821139505:web:2090a0ca432f6eec057710"
-  };
+  apiKey: "AIzaSyDWvnwrOO435xNODIobQ7nwHckdQKlLaP8",
+  authDomain: "discovery-1mhb9l.firebaseapp.com",
+  databaseURL: "https://discovery-1mhb9l-default-rtdb.firebaseio.com",
+  projectId: "discovery-1mhb9l",
+  storageBucket: "discovery-1mhb9l.appspot.com",
+  messagingSenderId: "105448739492",
+  appId: "1:105448739492:web:b4a389b380569369124c31"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
