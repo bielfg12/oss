@@ -9,7 +9,7 @@ const firebaseConfig = {
   projectId: "discovery-1mhb9l",
   storageBucket: "discovery-1mhb9l.appspot.com",
   messagingSenderId: "105448739492",
-  appId: "1:105448739492:web:b4a389b380569369124c31"
+  appId: "1:105448739492:web:283a40f21bba4c47124c31"
 };
 
 const app = initializeApp(firebaseConfig);
