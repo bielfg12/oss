@@ -11,6 +11,8 @@
 
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 
   <style>
     body {
@@ -26,17 +28,19 @@
     }
 
     #container {
-      width: 90%;
-      max-width: 1200px;
-      height: 120vh;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: row;
-      /* Alinha o mapa à esquerda e o conteúdo à direita */
-    }
+  width: 100%;
+  max-width: 1400px;
+  height: 100vh;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
 
     /* Parte esquerda - mapa */
     #leftSection {
@@ -169,31 +173,43 @@
       color: #777;
     }
 
-    @media (max-width: 768px) {
-      #container {
-        flex-direction: column;
-        /* Deixa o layout em coluna em dispositivos pequenos */
-      }
+    @media (max-width: 1024px) {
+  #container {
+    flex-direction: column;
+  }
 
-      #leftSection,
-      #rightSection {
-        width: 100%;
-        /* Faz o mapa e o conteúdo ocuparem toda a largura */
-        padding: 10px;
-      }
+  #map {
+    height: 300px;
+  }
 
-      #map {
-        height: 40vh;
-        /* Ajusta a altura do mapa em dispositivos menores */
-      }
+  #mechanicForm,
+  #mechanicList {
+    width: 100%;
+  }
+}
 
-      #mechanicForm,
-      #mechanicList {
-        width: 100%;
-        max-width: none;
-        /* Permite que o formulário e lista ocupem toda a largura */
-      }
-    }
+@media (max-width: 480px) {
+  #mechanicForm input,
+  #mechanicForm select {
+    font-size: 0.9em;
+    padding: 10px;
+  }
+
+  #mechanicForm button {
+    font-size: 0.9em;
+  }
+
+  .mechanic-item {
+    font-size: 0.9em;
+  }
+}
+#leftSection,
+#rightSection {
+  flex: 1;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
   </style>
 </head>
 
@@ -266,22 +282,53 @@
           })
           .catch(() => alert("Erro ao buscar coordenadas!"));
       }
+      map.on('locationfound', (e) => {
+  const radius = e.accuracy;
 
-      function getIconForSpecialty(specialty) {
-        return L.divIcon({
-          className: "leaflet-marker-icon",
-          html: '<span class="material-icons">location_on</span>',
-          iconSize: [32, 32],
-        });
-      }
+  // Aplica o ícone personalizado
+  L.marker(e.latlng, { icon: meuIconeLocalizacao })
+    .addTo(map)
+    .bindPopup("Você está aqui!")
+    .openPopup();
+
+  L.circle(e.latlng, radius).addTo(map);
+});
 
       const icones = {
-  "Tecelagem": L.icon({ iconUrl: 'icones/tecelagem.png', iconSize: [32, 32] }),
-  "Malharia": L.icon({ iconUrl: 'icones/malharia.png', iconSize: [32, 32] }),
-  "Fiação": L.icon({ iconUrl: 'icones/fiacao.png', iconSize: [32, 32] }),
-  "Beneficiamento": L.icon({ iconUrl: 'icones/beneficiamento.png', iconSize: [32, 32] }),
-  "Outros": L.icon({ iconUrl: 'icones/outros.png', iconSize: [32, 32] })
+  "Tecelagem": L.icon({ iconUrl: 'icones/tecelagem.png', iconSize: [24, 24] }),
+  "Malharia": L.icon({ iconUrl: 'icones/malharia.png', iconSize: [16, 16] }),
+  "Fiação": L.icon({ iconUrl: 'icones/fiacao.png', iconSize: [16, 16] }),
+  "Beneficiamento": L.icon({ iconUrl: 'icones/beneficiamento.png', iconSize: [16, 16] }),
+  "Outros": L.icon({ iconUrl: 'icones/outros.png', iconSize: [16, 16] })
 };
+
+const meuIconeLocalizacao = L.icon({
+  iconUrl: 'icones/localizacao.png', // Caminho da imagem
+  iconSize: [40, 40], // Tamanho do ícone
+  iconAnchor: [20, 40], // Ponto de ancoragem (meio da base)
+  popupAnchor: [0, -40] // Onde o popup abre em relação ao ícone
+});
+
+map.locate({ setView: true, maxZoom: 16 });
+
+// Quando a localização for encontrada
+map.on('locationfound', (e) => {
+  const radius = e.accuracy;
+
+  L.control.locate({
+  setView: true,
+  drawCircle: false,
+  showMarker: false
+}).addTo(map);
+
+  // Círculo em volta da precisão da localização
+  L.circle(e.latlng, radius).addTo(map);
+});
+
+// Se ocorrer erro ao localizar
+map.on('locationerror', () => {
+  alert("Não foi possível localizar sua posição.");
+});
 
 function getIconForSpecialty(specialty) {
   return icones[specialty] || icones["Outros"];
@@ -373,6 +420,43 @@ function getIconForSpecialty(specialty) {
 
       loadMechanics();
     });
+
+    function criarIconeDinamico(especialidade, zoom) {
+  // Define o tamanho base do ícone
+  const tamanhoBase = 24;
+
+  // Define o fator de escala com base no zoom
+  const fatorZoom = Math.max(1, Math.min(zoom / 10, 2)); // entre 1x e 2x
+
+  const tamanhoFinal = tamanhoBase * fatorZoom;
+
+  return L.icon({
+    iconUrl: `icones/${especialidade.toLowerCase()}.png`,
+    iconSize: [tamanhoFinal, tamanhoFinal],
+    iconAnchor: [tamanhoFinal / 2, tamanhoFinal],
+    popupAnchor: [0, -tamanhoFinal / 2]
+  });
+}
+
+const marcadores = [];
+
+const zoomAtual = map.getZoom();
+const icone = criarIconeDinamico(data.especialidade, zoomAtual);
+
+const marker = L.marker([data.lat, data.lon], { icon: icone }).addTo(map);
+marker.bindPopup(`...`);
+
+marcadores.push({ marker, especialidade: data.especialidade });
+
+map.on('zoomend', () => {
+  const novoZoom = map.getZoom();
+
+  marcadores.forEach(({ marker, especialidade }) => {
+    const novoIcone = criarIconeDinamico(especialidade, novoZoom);
+    marker.setIcon(novoIcone);
+  });
+});
+
     
   </script>
 </body>
