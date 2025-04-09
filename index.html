@@ -240,6 +240,7 @@
 
     <!-- Lista de mecânicos -->
     <ul id="mechanicList"></ul>
+    
 
     <!-- Mapa -->
     <div id="map"></div>
@@ -252,14 +253,20 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const firebaseConfig = {
-        apiKey: "AIzaSyDWvnwrOO435xNODIobQ7nwHckdQKlLaP8",
-        authDomain: "discovery-1mhb9l.firebaseapp.com",
-        databaseURL: "https://discovery-1mhb9l-default-rtdb.firebaseio.com",
-        projectId: "discovery-1mhb9l",
-        storageBucket: "discovery-1mhb9l.appspot.com",
-        messagingSenderId: "105448739492",
-        appId: "1:105448739492:web:ef59854c00045b8f124c31"
-      };
+          apiKey: "AIzaSyBavdnzxZKk-MdJOx7ra4c5xmluJcnLFtI",
+
+          authDomain: "projeto-pi-a1574.firebaseapp.com",
+
+          projectId: "projeto-pi-a1574",
+
+          storageBucket: "projeto-pi-a1574.firebasestorage.app",
+
+          messagingSenderId: "276575507871",
+
+          appId: "1:276575507871:web:b98e913603c744dca019aa",
+
+          measurementId: "G-NBEPCP9G8R",
+        };
 
       firebase.initializeApp(firebaseConfig);
       const database = firebase.database();
@@ -296,10 +303,10 @@
 
       const icones = {
   "Tecelagem": L.icon({ iconUrl: 'icones/tecelagem.png', iconSize: [24, 24] }),
-  "Malharia": L.icon({ iconUrl: 'icones/malharia.png', iconSize: [24, 24] }),
-  "Fiação": L.icon({ iconUrl: 'icones/fiacao.png', iconSize: [24, 24] }),
-  "Beneficiamento": L.icon({ iconUrl: 'icones/beneficiamento.png', iconSize: [24, 24] }),
-  "Outros": L.icon({ iconUrl: 'icones/outros.png', iconSize: [24, 24] })
+  "Malharia": L.icon({ iconUrl: 'icones/malharia.png', iconSize: [16, 16] }),
+  "Fiação": L.icon({ iconUrl: 'icones/fiacao.png', iconSize: [16, 16] }),
+  "Beneficiamento": L.icon({ iconUrl: 'icones/beneficiamento.png', iconSize: [16, 16] }),
+  "Outros": L.icon({ iconUrl: 'icones/outros.png', iconSize: [16, 16] })
 };
 
 const meuIconeLocalizacao = L.icon({
@@ -363,7 +370,9 @@ function getIconForSpecialty(specialty) {
         }
       });
 
-      function loadMechanics() {
+      function loadMechanics()
+      
+      {
         const list = document.getElementById("mechanicList");
         list.innerHTML = "";
 
@@ -457,6 +466,32 @@ map.on('zoomend', () => {
   });
 });
 
+document.querySelectorAll('.ver-no-mapa').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const endereco = btn.dataset.endereco;
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.length > 0) {
+          const lat = parseFloat(data[0].lat);
+          const lon = parseFloat(data[0].lon);
+          map.setView([lat, lon], 17);
+
+          L.popup()
+            .setLatLng([lat, lon])
+            .setContent(`Endereço: ${endereco}`)
+            .openOn(map);
+        } else {
+          alert('Endereço não encontrado!');
+        }
+      })
+      .catch(err => {
+        console.error('Erro ao buscar localização:', err);
+        alert('Erro ao buscar localização!');
+      });
+  });
+});
     
   </script>
 </body>
