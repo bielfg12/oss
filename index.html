@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Mecânicos</title>
+
+  <!-- Estilos do Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #container {
+      width: 90%;
+      max-width: 1200px;
+      height: 120vh;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: row;
+      /* Alinha o mapa à esquerda e o conteúdo à direita */
+    }
+
+    /* Parte esquerda - mapa */
+    #leftSection {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      width: 35%;
+      /* Deixa a parte do mapa com 35% da largura */
+      padding: 10px;
+    }
+
+    #map {
+      width: 400%;
+      height: 100vh;
+      border-radius: 8px;
+      border: 2px solid #ddd;
+      background-color: #e0e0e0;
+    }
+
+    /* Parte direita - formulário e lista */
+    #rightSection {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      width: 65%;
+      /* Deixa a parte do formulário e lista com 65% da largura */
+      padding: 10px;
+    }
+
+    /* Formulário */
+    #mechanicForm {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      /* Aumenta o espaçamento entre os campos */
+      background-color: #fafafa;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    #mechanicForm h2 {
+      font-size: 1.6em;
+      color: #333;
+      margin-bottom: 20px;
+      /* Espaço entre o título e os campos */
+      text-align: center;
+    }
+
+    #mechanicForm input,
+    #mechanicForm select {
+      width: 90%;
+      padding: 12px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      margin-bottom: 10px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #mechanicForm input:focus,
+    #mechanicForm select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+      outline: none;
+    }
+
+    #mechanicForm button {
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #mechanicForm button:hover {
+      background-color: #0056b3;
+    }
+
+    #mechanicForm button:active {
+      background-color: #004085;
+    }
+
+    /* Lista */
+    #mechanicList {
+      width: 100%;
+      max-width: 500px;
+      height: auto;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background-color: #fafafa;
+      padding: 15px;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      /* Espaço acima da lista */
+    }
+
+    .mechanic-item {
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 15px;
+      /* Espaço entre cada oficina */
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .mechanic-item p {
+      margin: 5px 0;
+    }
+
+    .workshop-name {
+      font-size: 1.2em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .workshop-specialty {
+      font-size: 1em;
+      height: 60%;
+      color: #777;
+    }
+
+    @media (max-width: 768px) {
+      #container {
+        flex-direction: column;
+        /* Deixa o layout em coluna em dispositivos pequenos */
+      }
+
+      #leftSection,
+      #rightSection {
+        width: 100%;
+        /* Faz o mapa e o conteúdo ocuparem toda a largura */
+        padding: 10px;
+      }
+
+      #map {
+        height: 40vh;
+        /* Ajusta a altura do mapa em dispositivos menores */
+      }
+
+      #mechanicForm,
+      #mechanicList {
+        width: 100%;
+        max-width: none;
+        /* Permite que o formulário e lista ocupem toda a largura */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container">
+    <!-- Formulário e Mapa -->
+    <form id="mechanicForm">
+      <input type="text" id="nome" placeholder="Nome da Empresa" required>
+      <input type="text" id="bairro" placeholder="Bairro" required>
+      <input type="text" id="endereco" placeholder="Endereço (Rua, número...)" required>
+
+      <select id="especialidade" required>
+        <option value="">Selecione a Especialidade</option>
+        <option value="Tecelagem">Tecelagem</option>
+        <option value="Malharia">Malharia</option>
+        <option value="Fiação">Fiação</option>
+        <option value="Beneficiamento">Beneficiamento</option>
+        <option value="Outros">Outros</option>
+      </select>
+
+      <select id="visitado" required>
+        <option value="nao">Não visitado</option>
+        <option value="sim">Visitado</option>
+      </select>
+
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <!-- Lista de mecânicos -->
+    <ul id="mechanicList"></ul>
+
+    <!-- Mapa -->
+    <div id="map"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const firebaseConfig = {
+        apiKey: "AIzaSyDWvnwrOO435xNODIobQ7nwHckdQKlLaP8",
+        authDomain: "discovery-1mhb9l.firebaseapp.com",
+        databaseURL: "https://discovery-1mhb9l-default-rtdb.firebaseio.com",
+        projectId: "discovery-1mhb9l",
+        storageBucket: "discovery-1mhb9l.appspot.com",
+        messagingSenderId: "105448739492",
+        appId: "1:105448739492:web:ef59854c00045b8f124c31"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+      const map = L.map("map").setView([-23.1992, -47.2899], 10);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      let editKey = null;
+
+      function getCoordinates(address, callback) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.length > 0) {
+              callback(data[0].lat, data[0].lon);
+            } else {
+              alert("Endereço não encontrado!");
+            }
+          })
+          .catch(() => alert("Erro ao buscar coordenadas!"));
+      }
+
+      function getIconForSpecialty(specialty) {
+        return L.divIcon({
+          className: "leaflet-marker-icon",
+          html: '<span class="material-icons">location_on</span>',
+          iconSize: [32, 32],
+        });
+      }
+
+      const icones = {
+  "Tecelagem": L.icon({ iconUrl: 'icones/tecelagem.png', iconSize: [32, 32] }),
+  "Malharia": L.icon({ iconUrl: 'icones/malharia.png', iconSize: [32, 32] }),
+  "Fiação": L.icon({ iconUrl: 'icones/fiacao.png', iconSize: [32, 32] }),
+  "Beneficiamento": L.icon({ iconUrl: 'icones/beneficiamento.png', iconSize: [32, 32] }),
+  "Outros": L.icon({ iconUrl: 'icones/outros.png', iconSize: [32, 32] })
+};
+
+function getIconForSpecialty(specialty) {
+  return icones[specialty] || icones["Outros"];
+}
+
+      document.getElementById("mechanicForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const nome = document.getElementById("nome").value;
+        const bairro = document.getElementById("bairro").value;
+        const endereco = document.getElementById("endereco").value;
+        const especialidade = document.getElementById("especialidade").value;
+        const visitado = document.getElementById("visitado").value;
+
+        if (nome && bairro && endereco && especialidade && visitado) {
+          getCoordinates(endereco, function (lat, lon) {
+            const mechanicData = { nome, bairro, endereco, especialidade, visitado, lat, lon };
+
+            if (editKey) {
+              database.ref("mechanics/" + editKey).set(mechanicData);
+              editKey = null;
+            } else {
+              const newRef = database.ref("mechanics").push();
+              newRef.set(mechanicData);
+            }
+
+            document.getElementById("mechanicForm").reset();
+            loadMechanics();
+          });
+        } else {
+          alert("Todos os campos são obrigatórios!");
+        }
+      });
+
+      function loadMechanics() {
+        const list = document.getElementById("mechanicList");
+        list.innerHTML = "";
+
+        database.ref("mechanics").once("value", snapshot => {
+          snapshot.forEach(child => {
+            const data = child.val();
+            const key = child.key;
+
+            // Ícone e marcador
+            const icon = getIconForSpecialty(data.especialidade);
+            const marker = L.marker([data.lat, data.lon], { icon }).addTo(map);
+            marker.bindPopup(`
+                <b>${data.nome}</b><br>
+                ${data.endereco} - ${data.bairro}<br>
+                ${data.especialidade} - Visitado: ${data.visitado}
+              `);
+
+            // Criar item da lista
+            const li = document.createElement("li");
+            li.className = "mechanic-item";
+            li.innerHTML = `
+                <p><b>Nome:</b> ${data.nome}</p>
+                <p><b>Endereço:</b> ${data.endereco}</p>
+                <p><b>Bairro:</b> ${data.bairro}</p>
+                <p><b>Especialidade:</b> ${data.especialidade}</p>
+                <p><b>Visitado:</b> ${data.visitado}</p>
+                <button onclick="editMechanic('${key}')">Editar</button>
+                <button onclick="deleteMechanic('${key}')">Excluir</button>
+              `;
+
+            list.appendChild(li);
+          });
+        });
+      }
+
+      window.editMechanic = function (key) {
+        database.ref("mechanics/" + key).once("value", snapshot => {
+          const data = snapshot.val();
+          document.getElementById("nome").value = data.nome;
+          document.getElementById("bairro").value = data.bairro;
+          document.getElementById("endereco").value = data.endereco;
+          document.getElementById("especialidade").value = data.especialidade;
+          document.getElementById("visitado").value = data.visitado;
+          editKey = key;
+        });
+      };
+
+      window.deleteMechanic = function (key) {
+        if (confirm("Deseja realmente excluir este registro?")) {
+          database.ref("mechanics/" + key).remove();
+          loadMechanics();
+        }
+      };
+
+      loadMechanics();
+    });
+    
+  </script>
+</body>
+
+</html>
