@@ -51,6 +51,7 @@
       </tr>
     </thead>
     <tbody id="tabelaConvidados">
+      <h2 id="totalPessoas" style="margin-top: 20px; text-align: center;"></h2>
       <!-- Dados serão inseridos aqui -->
     </tbody>
   </table>
@@ -74,24 +75,24 @@
     const db = getFirestore(app);
 
     async function carregarConvidados() {
-      const tabela = document.getElementById("tabelaConvidados");
-      const querySnapshot = await getDocs(collection(db, "convidados"));
-      
-      querySnapshot.forEach((doc) => {
-        const dados = doc.data();
-        const linha = document.createElement("tr");
+  const tabela = document.getElementById("tabelaConvidados");
+  const querySnapshot = await getDocs(collection(db, "convidados"));
+  
+  querySnapshot.forEach((doc) => {
+    const dados = doc.data();
+    const linha = document.createElement("tr");
 
-        linha.innerHTML = `
-          <td>${dados.nome}</td>
-          <td class="${dados.presenca ? 'sim' : 'nao'}">${dados.presenca ? 'Sim' : 'Não'}</td>
-          <td>${dados.acompanhantes || '-'}</td>
-          <td>${dados.quantidade}</td>
-          <td>${new Date(dados.data.seconds * 1000).toLocaleString()}</td>
-        `;
+    linha.innerHTML = `
+      <td>${dados.nome}</td>
+      <td class="${dados.presenca ? 'sim' : 'nao'}">${dados.presenca ? 'Sim' : 'Não'}</td>
+      <td>${dados.acompanhantes || '-'}</td>
+      <td>${dados.quantidade}</td>
+      <td>${new Date(dados.data.seconds * 1000).toLocaleString()}</td>
+    `;
 
-        tabela.appendChild(linha);
-      });
-    }
+    tabela.appendChild(linha);
+  });
+}
 
     carregarConvidados();
   </script>
