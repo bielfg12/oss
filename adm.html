@@ -76,8 +76,11 @@
 
     async function carregarConvidados() {
   const tabela = document.getElementById("tabelaConvidados");
+  const totalDisplay = document.getElementById("totalPessoas");
   const querySnapshot = await getDocs(collection(db, "convidados"));
-  
+
+  let totalConfirmados = 0;
+
   querySnapshot.forEach((doc) => {
     const dados = doc.data();
     const linha = document.createElement("tr");
@@ -91,7 +94,13 @@
     `;
 
     tabela.appendChild(linha);
+
+    if (dados.presenca) {
+      totalConfirmados += Number(dados.quantidade);
+    }
   });
+
+  totalDisplay.innerText = `Total de pessoas confirmadas: ${totalConfirmados}`;
 }
 
     carregarConvidados();
