@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirmação de Presença</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fefcf8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #444;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .confirm-buttons button {
+  width: 48%;
+  background-color: white;
+  border: 1px solid #999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.confirm-buttons button.selected {
+  background-color: #000;
+  color: #fff;
+  border-color: #000;
+}
+    .submit-btn {
+      background-color: #333;
+      color: white;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Você está convidado!</h1>
+    <form id="rsvpForm">
+      <label for="nome">Seu Nome:</label>
+      <input type="text" id="nome" required>
+
+      <label>Confirme sua presença:</label>
+      <div class="confirm-buttons">
+        <button type="button" onclick="setPresenca(true)">Sim</button>
+        <button type="button" onclick="setPresenca(false)">Não</button>
+      </div>
+
+      <label for="acompanhantes">Nome dos acompanhantes:</label>
+      <input type="text" id="acompanhantes">
+
+      <label for="quantidade">Número de pessoas:</label>
+      <input type="number" id="quantidade" min="1" value="1">
+
+      <button type="submit" class="submit-btn">CONFIRMAR</button>
+    </form>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // TODO: Substitua abaixo pela sua config do Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyBLZW1wp5w3MAuWyBqglNkKwDRlrsa8Ia8",
+  authDomain: "site-xtvsvs.firebaseapp.com",
+  projectId: "site-xtvsvs",
+  storageBucket: "site-xtvsvs.firebasestorage.app",
+  messagingSenderId: "885976868605",
+  appId: "1:885976868605:web:a27cd91251186e1d148094"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let presenca = null;
+
+    window.setPresenca = function(valor) {
+  presenca = valor;
+  
+  const botoes = document.querySelectorAll(".confirm-buttons button");
+  botoes.forEach(btn => btn.classList.remove("selected"));
+
+  if (valor) {
+    botoes[0].classList.add("selected"); // Botão "Sim"
+  } else {
+    botoes[1].classList.add("selected"); // Botão "Não"
+  }
+}
+
+    const form = document.getElementById("rsvpForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nome = document.getElementById("nome").value.trim();
+      const acompanhantes = document.getElementById("acompanhantes").value.trim();
+      const quantidade = parseInt(document.getElementById("quantidade").value);
+
+      if (presenca === null) {
+        alert("Por favor, selecione se irá comparecer.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "convidados"), {
+          nome,
+          presenca,
+          acompanhantes,
+          quantidade,
+          data: new Date()
+        });
+        alert("Confirmação enviada com sucesso!");
+        form.reset();
+        presenca = null;
+      } catch (error) {
+        console.error("Erro ao salvar:", error);
+        alert("Erro ao enviar confirmação.");
+      }
+    });
+  </script>
+</body>
+</html>

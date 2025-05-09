@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de Convidados</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background-color: #333;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .sim { color: green; font-weight: bold; }
+    .nao { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <h1>Lista de Convidados</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Presença</th>
+        <th>Acompanhantes</th>
+        <th>Nº de Pessoas</th>
+        <th>Mensagem</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaConvidados">
+      <!-- Dados serão inseridos aqui -->
+    </tbody>
+  </table>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Substitua com a mesma configuração do seu projeto Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyBLZW1wp5w3MAuWyBqglNkKwDRlrsa8Ia8",
+  authDomain: "site-xtvsvs.firebaseapp.com",
+  projectId: "site-xtvsvs",
+  storageBucket: "site-xtvsvs.firebasestorage.app",
+  messagingSenderId: "885976868605",
+  appId: "1:885976868605:web:a27cd91251186e1d148094"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function carregarConvidados() {
+      const tabela = document.getElementById("tabelaConvidados");
+      const querySnapshot = await getDocs(collection(db, "convidados"));
+      
+      querySnapshot.forEach((doc) => {
+        const dados = doc.data();
+        const linha = document.createElement("tr");
+
+        linha.innerHTML = `
+          <td>${dados.nome}</td>
+          <td class="${dados.presenca ? 'sim' : 'nao'}">${dados.presenca ? 'Sim' : 'Não'}</td>
+          <td>${dados.acompanhantes || '-'}</td>
+          <td>${dados.quantidade}</td>
+          <td>${dados.mensagem || '-'}</td>
+          <td>${new Date(dados.data.seconds * 1000).toLocaleString()}</td>
+        `;
+
+        tabela.appendChild(linha);
+      });
+    }
+
+    carregarConvidados();
+  </script>
+
+</body>
+</html>
