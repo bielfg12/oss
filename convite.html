@@ -82,11 +82,10 @@
       </div>
 
       <label>Levará crianças?</label>
-<div class="confirm-buttons" id="criancas-buttons">
-  <button type="button" onclick="setCriancas(true)">Sim</button>
-  <button type="button" onclick="setCriancas(false)">Não</button>
+<div id="criancas-buttons">
+  <button id="btnSimCrianca" type="button" onclick="setCriancas(true)">Sim</button>
+  <button id="btnNaoCrianca" type="button" onclick="setCriancas(false)">Não</button>
 </div>
-
 <div id="formCriancas" style="display: none;">
   <label for="nomeCrianca">Nomes das crianças:</label>
   <input type="text" id="nomeCrianca">
@@ -100,6 +99,7 @@
 
   <!-- Firebase SDKs -->
  <!-- Firebase SDKs -->
+<!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -119,17 +119,9 @@
   let presenca = null;
   let levaraCriancas = false;
 
-  document.getElementById('btnSimCrianca').addEventListener('click', () => {
-    levaraCriancas = true;
-  });
-
-  document.getElementById('btnNaoCrianca').addEventListener('click', () => {
-    levaraCriancas = false;
-  });
-
   window.setPresenca = function(valor) {
     presenca = valor;
-    const botoes = document.querySelectorAll(".confirm-buttons")[0].querySelectorAll("button");
+    const botoes = document.querySelectorAll(".confirm-buttons button");
     botoes.forEach(btn => btn.classList.remove("selected"));
     if (valor) {
       botoes[0].classList.add("selected");
@@ -139,7 +131,7 @@
   };
 
   window.setCriancas = function(valor) {
-    levaraCriancas = valor; // ✅ Correção aqui
+    levaraCriancas = valor;
     const botoes = document.querySelectorAll("#criancas-buttons button");
     botoes.forEach(btn => btn.classList.remove("selected"));
     if (valor) {
@@ -182,7 +174,7 @@
         presenca,
         acompanhantes,
         quantidade,
-        levaraCriancas, // ✅ Correção aqui
+        levaraCriancas,
         nomeCrianca,
         idadeCrianca,
         data: new Date()
