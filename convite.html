@@ -99,105 +99,107 @@
   </div>
 
   <!-- Firebase SDKs -->
- <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+ <!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBLZW1wp5w3MAuWyBqglNkKwDRlrsa8Ia8",
-      authDomain: "site-xtvsvs.firebaseapp.com",
-      projectId: "site-xtvsvs",
-      storageBucket: "site-xtvsvs.firebasestorage.app",
-      messagingSenderId: "885976868605",
-      appId: "1:885976868605:web:a27cd91251186e1d148094"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBLZW1wp5w3MAuWyBqglNkKwDRlrsa8Ia8",
+    authDomain: "site-xtvsvs.firebaseapp.com",
+    projectId: "site-xtvsvs",
+    storageBucket: "site-xtvsvs.firebasestorage.app",
+    messagingSenderId: "885976868605",
+    appId: "1:885976868605:web:a27cd91251186e1d148094"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    let presenca = null;
-    let levaraCriancas = false;
+  let presenca = null;
+  let levaraCriancas = false;
 
-document.getElementById('btnSimCrianca').addEventListener('click', () => {
-  levaraCriancas = true;
-});
+  document.getElementById('btnSimCrianca').addEventListener('click', () => {
+    levaraCriancas = true;
+  });
 
-document.getElementById('btnNaoCrianca').addEventListener('click', () => {
-  levaraCriancas = false;
-});
+  document.getElementById('btnNaoCrianca').addEventListener('click', () => {
+    levaraCriancas = false;
+  });
 
-    window.setPresenca = function(valor) {
-      presenca = valor;
-      const botoes = document.querySelectorAll(".confirm-buttons")[0].querySelectorAll("button");
-      botoes.forEach(btn => btn.classList.remove("selected"));
-      if (valor) {
-        botoes[0].classList.add("selected");
-      } else {
-        botoes[1].classList.add("selected");
-      }
-    };
+  window.setPresenca = function(valor) {
+    presenca = valor;
+    const botoes = document.querySelectorAll(".confirm-buttons")[0].querySelectorAll("button");
+    botoes.forEach(btn => btn.classList.remove("selected"));
+    if (valor) {
+      botoes[0].classList.add("selected");
+    } else {
+      botoes[1].classList.add("selected");
+    }
+  };
 
-    window.setCriancas = function(valor) {
-      levarCriancas = valor;
-      const botoes = document.querySelectorAll("#criancas-buttons button");
-      botoes.forEach(btn => btn.classList.remove("selected"));
-      if (valor) {
-        botoes[0].classList.add("selected");
-        document.getElementById("formCriancas").style.display = "block";
-      } else {
-        botoes[1].classList.add("selected");
-        document.getElementById("formCriancas").style.display = "none";
-      }
-    };
+  window.setCriancas = function(valor) {
+    levaraCriancas = valor; // ✅ Correção aqui
+    const botoes = document.querySelectorAll("#criancas-buttons button");
+    botoes.forEach(btn => btn.classList.remove("selected"));
+    if (valor) {
+      botoes[0].classList.add("selected");
+      document.getElementById("formCriancas").style.display = "block";
+    } else {
+      botoes[1].classList.add("selected");
+      document.getElementById("formCriancas").style.display = "none";
+    }
+  };
 
-    const form = document.getElementById("rsvpForm");
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  const form = document.getElementById("rsvpForm");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      const nome = document.getElementById("nome").value.trim();
-      const acompanhantes = document.getElementById("acompanhantes").value.trim();
-      const quantidade = parseInt(document.getElementById("quantidade").value);
+    const nome = document.getElementById("nome").value.trim();
+    const acompanhantes = document.getElementById("acompanhantes").value.trim();
+    const quantidade = parseInt(document.getElementById("quantidade").value);
 
-      if (presenca === null) {
-        alert("Por favor, selecione se irá comparecer.");
+    if (presenca === null) {
+      alert("Por favor, selecione se irá comparecer.");
+      return;
+    }
+
+    let nomeCrianca = "";
+    let idadeCrianca = "";
+
+    if (levaraCriancas) {
+      nomeCrianca = document.getElementById("nomeCrianca").value.trim();
+      idadeCrianca = document.getElementById("idadeCrianca").value.trim();
+      if (!nomeCrianca || !idadeCrianca) {
+        alert("Por favor, preencha o nome e idade da criança.");
         return;
       }
+    }
 
-      let nomeCrianca = "";
-      let idadeCrianca = "";
+    try {
+      await addDoc(collection(db, "convidados"), {
+        nome,
+        presenca,
+        acompanhantes,
+        quantidade,
+        levaraCriancas, // ✅ Correção aqui
+        nomeCrianca,
+        idadeCrianca,
+        data: new Date()
+      });
 
-      if (levarCriancas) {
-        nomeCrianca = document.getElementById("nomeCrianca").value.trim();
-        idadeCrianca = document.getElementById("idadeCrianca").value.trim();
-        if (!nomeCrianca || !idadeCrianca) {
-          alert("Por favor, preencha o nome e idade da criança.");
-          return;
-        }
-      }
-
-      try {
-        await addDoc(collection(db, "convidados"), {
-          nome,
-          presenca,
-          acompanhantes,
-          quantidade,
-          levarCriancas,
-          nomeCrianca,
-          idadeCrianca,
-          data: new Date()
-        });
-
-        alert("Confirmação enviada com sucesso!");
-        form.reset();
-        presenca = null;
-        levarCriancas = null;
-        document.getElementById("formCriancas").style.display = "none";
-        document.querySelectorAll(".confirm-buttons button").forEach(btn => btn.classList.remove("selected"));
-      } catch (error) {
-        console.error("Erro ao salvar:", error);
-        alert("Erro ao enviar confirmação.");
-      }
-    });
-  </script>
+      alert("Confirmação enviada com sucesso!");
+      form.reset();
+      presenca = null;
+      levaraCriancas = false;
+      document.getElementById("formCriancas").style.display = "none";
+      document.querySelectorAll(".confirm-buttons button").forEach(btn => btn.classList.remove("selected"));
+      document.querySelectorAll("#criancas-buttons button").forEach(btn => btn.classList.remove("selected"));
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      alert("Erro ao enviar confirmação.");
+    }
+  });
+</script>
 </body>
 </html>
