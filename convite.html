@@ -116,7 +116,15 @@
     const db = getFirestore(app);
 
     let presenca = null;
-    let levarCriancas = null;
+    let levaraCriancas = false;
+
+document.getElementById('btnSimCrianca').addEventListener('click', () => {
+  levaraCriancas = true;
+});
+
+document.getElementById('btnNaoCrianca').addEventListener('click', () => {
+  levaraCriancas = false;
+});
 
     window.setPresenca = function(valor) {
       presenca = valor;
