@@ -80,6 +80,18 @@
 
       <label for="quantidade">Número de pessoas: (contando com você)</label>
       <input type="number" id="quantidade" min="1" value="1">
+      <label>Levará crianças?</label>
+<div class="confirm-buttons" id="criancas-buttons">
+  <button type="button" onclick="setCriancas(true)">Sim</button>
+  <button type="button" onclick="setCriancas(false)">Não</button>
+</div>
+
+<div id="formCriancas" style="display: none;">
+  <label for="nomeCrianca">Nome da criança:</label>
+  <input type="text" id="nomeCrianca">
+
+  <label for="idadeCrianca">Idade da criança:</label>
+  <input type="number" id="idadeCrianca" min="0">
 
       <button type="submit" class="submit-btn">CONFIRMAR</button>
     </form>
@@ -139,6 +151,23 @@
           quantidade,
           data: new Date()
         });
+
+        let levarCriancas = null;
+
+window.setCriancas = function(valor) {
+  levarCriancas = valor;
+  const botoes = document.querySelectorAll("#criancas-buttons button");
+  botoes.forEach(btn => btn.classList.remove("selected"));
+
+  if (valor) {
+    botoes[0].classList.add("selected"); // Botão "Sim"
+    document.getElementById("formCriancas").style.display = "block";
+  } else {
+    botoes[1].classList.add("selected"); // Botão "Não"
+    document.getElementById("formCriancas").style.display = "none";
+  }
+};
+        
         alert("Confirmação enviada com sucesso!");
         form.reset();
         presenca = null;
