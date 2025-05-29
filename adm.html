@@ -42,14 +42,17 @@
   <h1>Lista de Convidados</h1>
   <table>
     <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Presença</th>
-        <th>Acompanhantes</th>
-        <th>Nº de Pessoas</th>
-        <th>Data</th>
-      </tr>
-    </thead>
+  <tr>
+    <th>Nome</th>
+    <th>Presença</th>
+    <th>Acompanhantes</th>
+    <th>Nº de Pessoas</th>
+    <th>Levará Crianças?</th>
+    <th>Nome da Criança</th>
+    <th>Idade da Criança</th>
+    <th>Data</th>
+  </tr>
+</thead>
     <tbody id="tabelaConvidados">
      <h2 id="totalPessoas" style="margin-top: 20px; text-align: center;"></h2> 
       <!-- Dados serão inseridos aqui -->
@@ -87,10 +90,13 @@
 
     linha.innerHTML = `
       <td>${dados.nome}</td>
-      <td class="${dados.presenca ? 'sim' : 'nao'}">${dados.presenca ? 'Sim' : 'Não'}</td>
-      <td>${dados.acompanhantes || '-'}</td>
-      <td>${dados.quantidade}</td>
-      <td>${new Date(dados.data.seconds * 1000).toLocaleString()}</td>
+  <td class="${dados.presenca ? 'sim' : 'nao'}">${dados.presenca ? 'Sim' : 'Não'}</td>
+  <td>${dados.acompanhantes || '-'}</td>
+  <td>${dados.quantidade}</td>
+  <td>${dados.levaraCriancas ? 'Sim' : 'Não'}</td>
+  <td>${dados.nomeCrianca || '-'}</td>
+  <td>${dados.idadeCrianca || '-'}</td>
+  <td>${new Date(dados.data.seconds * 1000).toLocaleString()}</td>
     `;
 
     tabela.appendChild(linha);
