@@ -17,16 +17,17 @@
     }
   
     body {
-      background: url('img/1.jpeg') no-repeat center center fixed; /* Substitua pelo caminho da sua imagem */
+      background: url('img/1.png') no-repeat center center fixed; /* Substitua pelo caminho da sua imagem */
       background-size: cover;
       display: flex;
+      backdrop-filter: blur(2px);
       justify-content: center;
       align-items: center;
     }
   
     .container {
       background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(4px);
       padding: 30px;
       border-radius: 40px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -34,6 +35,8 @@
       width: 100%;
       border: 1px solid rgba(255, 255, 255, 0.4);
     }
+
+    
   
     h1 {
       font-size: 26px;
@@ -54,7 +57,7 @@
       width: 100%;
       padding: 10px;
       margin-top: 5px;
-      border-radius: 8px;
+      border-radius: 15px;
       border: 1px solid #ccc;
       font-size: 14px;
     }
@@ -64,12 +67,14 @@
       background-color: white;
       border: 1px solid #999;
       cursor: pointer;
+      border-radius: 15px;
       transition: all 0.3s ease;
     }
   
     .confirm-buttons button.selected {
       background-color: #6cabff;
       color: #fff;
+      border-radius: 15px;
       border-color: #6cabff;
     }
   
@@ -77,6 +82,7 @@
       background-color: #6cabff;
       color: rgb(255, 255, 255);
       margin-top: 20px;
+      border-radius: 15px;
       cursor: pointer;
     }
   </style>
