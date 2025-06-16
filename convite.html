@@ -5,35 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Confirmação de Presença</title>
   <style>
-    body {
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #fefcf8;
+    }
+  
+    body, html {
+      height: 100%;
+    }
+  
+    body {
+      background: url('img/1.jpeg') no-repeat center center fixed; /* Substitua pelo caminho da sua imagem */
+      background-size: cover;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
+  
     .container {
-      background: white;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
       padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-radius: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       max-width: 400px;
       width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.4);
     }
+  
     h1 {
       font-size: 26px;
       margin-bottom: 20px;
       text-align: center;
-      color: #333;
+      color: #fff;
     }
+  
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
       font-size: 14px;
-      color: #444;
+      color: #fff;
     }
+  
     input, select, button {
       width: 100%;
       padding: 10px;
@@ -42,25 +58,29 @@
       border: 1px solid #ccc;
       font-size: 14px;
     }
+  
     .confirm-buttons button {
-  width: 48%;
-  background-color: white;
-  border: 1px solid #999;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.confirm-buttons button.selected {
-  background-color: #000;
-  color: #fff;
-  border-color: #000;
-}
+      width: 48%;
+      background-color: white;
+      border: 1px solid #999;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  
+    .confirm-buttons button.selected {
+      background-color: #6cabff;
+      color: #fff;
+      border-color: #6cabff;
+    }
+  
     .submit-btn {
-      background-color: #333;
-      color: white;
+      background-color: #6cabff;
+      color: rgb(255, 255, 255);
       margin-top: 20px;
       cursor: pointer;
     }
   </style>
+  
 </head>
 <body>
   <div class="container">
@@ -69,11 +89,11 @@
       <label for="nome">Seu Nome:</label>
       <input type="text" id="nome" required>
       
-      <label for="acompanhantes">Nome do acompanhante:</label>
+      <label for="acompanhantes">Nome do acompanhante: (se houver)</label>
       <input type="text" id="acompanhantes">
 
       <label for="quantidade">Número de pessoas: (somente adultos/adolescente)</label>
-      <input type="number" id="quantidade" min="1" value="1">
+      <input type="number" id="quantidade" min="1" value="">
 
       <label>Confirme sua presença:</label>
       <div class="confirm-buttons">
