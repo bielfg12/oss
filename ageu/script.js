@@ -95,7 +95,7 @@ window.onload = () => {
     let y = 10;
   
     doc.setFontSize(18);
-    doc.text("Orçamento Itu Inox", 105, y, { align: "center" });
+    doc.text("Orçamento I9", 105, y, { align: "center" });
     y += 10;
   
     const camposIniciais = [
@@ -161,7 +161,7 @@ window.onload = () => {
     doc.setFontSize(10);
     doc.text(splitObs, 10, y);
   
-    doc.save("orcamento_itu_inox.pdf");
+    doc.save("orcamento.pdf");
   }
   
   // Função auxiliar para gerar tabela no PDF
@@ -242,7 +242,7 @@ window.onload = () => {
     doc.text(`Total: ${document.getElementById("total").value}`, 10, y);
     y += 10;
   
-    doc.save("materiais_itu_inox_unificado.pdf");
+    doc.save("materiais.pdf");
   }
 
   
