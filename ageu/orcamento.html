@@ -1,1 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Orçamento Itu Inox</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
 
+<div class="menu-tabs">
+  <button class="tab-button active" onclick="mostrarAba('aba-orcamento', event)">Orçamento</button>
+  <button class="tab-button" onclick="mostrarAba('aba-material', event)">Material</button>
+</div>
+
+<h1>Orçamento Itu Inox</h1>
+
+<div id="aba-orcamento" class="tab-content" style="display: block;">
+  <div class="section">
+    <label>Cliente:</label><input id="cliente">
+    <label>CNPJ:</label><input id="cnpj">
+    <label>IE:</label><input id="ie">
+    <label>A/C Sr:</label><input id="ac">
+    <label>Requisição:</label><input id="requisicao">
+    <label>Fone:</label><input id="fone">
+    <label>Email:</label><input id="email">
+    <label>Orçamento Nº:</label><input id="orcamento">
+    <label>Data:</label><input id="data" value="18/04/24">
+  </div>
+
+  <div class="section">
+    <h3>Itens</h3>
+    <table id="tabelaItens">
+      <thead>
+        <tr>
+          <th>Item Nº</th><th>Unidade</th><th>Tipo</th><th>ESP</th><th>Código</th><th>Descrição</th>
+          <th>Largura</th><th>Compr</th><th>Laser</th><th>Dobra CNC</th><th>Mont</th>
+          <th>Solda TIG/MIG</th><th>Acab/Polim</th><th>Unitário</th><th>Sub Total</th>
+        </tr>
+      </thead>
+      <tbody id="corpoTabelaItens"></tbody>
+    </table>
+    <button type="button" onclick="adicionarLinha()" class="btn-adicionar">➕ Adicionar Linha</button>
+  </div>
+
+  <div class="section">
+    <label>Condições de Pagamento:</label><input id="pagamento" value="Boleto">
+    <label>Prazo de Entrega:</label><input id="prazo" value="07 dias úteis">
+    <label>Matéria Prima Fornecimento:</label><input id="materiaPrima">
+    <label>Acabamento:</label><input id="acabamento">
+    <label>Pintura:</label><input id="pintura">
+    <label>Engenharia:</label><input id="engenharia">
+    <label>Processo:</label><input id="processo">
+    <label>Impostos IND:</label><input id="ind">
+    <label>ICMS:</label><input id="icms">
+    <label>IPI:</label><input id="ipi">
+    <label>Frete:</label>
+    <select id="frete">
+      <option>CIF</option>
+      <option selected>FOB</option>
+    </select>
+  </div>
+
+  <div class="section">
+    <label>Observações:</label>
+    <textarea id="observacoes" rows="10">
+1.2 Durante o processo de dobra, poderão ocorrer marcas nas peças...
+1.3 A coleta do pedido... etc.
+    </textarea>
+  </div>
+
+  <div style="margin-top: 30px;">
+    <button onclick="gerarPDF()" class="btn-pdf">📄 Gerar PDF Profissional</button>
+  </div>
+</div>
+
+<div id="aba-material" class="tab-content">
+  <div class="section">
+    <h3>Materiais - Unificados</h3>
+    <div class="table-wrapper" style="overflow-x:auto;">
+      <table id="tabelaMateriaisUnificada">
+        <thead>
+          <tr>
+            <th>REAL</th>
+            <th>ESPESSURA (MM)</th>
+            <th>LARGURA (MM)</th>
+            <th>COMPRIMENTO (MM)</th>
+            <th>PESO UNIT. (KG)</th>
+            <th>PESO TOTAL</th>
+            <th>Kg/M²</th>
+            <th>M²</th>
+            <th>UNITÁRIO</th>
+            <th>TOTAL</th>
+            <th>ENTRADAS</th>
+            <th>PERÍMETRO (MM)</th>
+            <th>TEMPO DE CORTE</th>
+            <th>LASER CARBONO</th>
+            <th>AR COMPRIMIDO</th>
+            <th>LASER INOX</th>
+            <th>LASER R$ MATERIAL</th>
+            <th>VALOR P/ CONJUNTO</th>
+            <th>NOTA</th>
+            <th>NOTA 10%</th>
+            <th>COMISSÃO %</th>
+            <th>VALOR C/ COMISSÃO</th>
+            <th>MATÉRIA PRIMA UNITÁRIO R$</th>
+            <th>FRETE R$</th>
+            <th>VALOR FINAL C/ MP E FRETE</th>
+          </tr>
+        </thead>
+        <tbody id="corpoMateriaisUnificada"></tbody>
+      </table>
+    </div>
+    <button onclick="adicionarMaterialUnificada()" class="btn-adicionar">➕ Adicionar Material</button>
+  </div>
+
+
+  <div class="section">
+    <label>Unidade:</label><input type="text" id="unidade">
+    <label>Total:</label><input type="text" id="total">
+  </div>
+  
+
+  <div class="section">
+    <h3>Tabela de Espessura</h3>
+    <table id="tabelaEspessura" style="width: 200px; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="border: 1px solid #ccc; padding: 4px; text-align: center;">Espessuras (mm)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">1,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">1,5</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">2,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">2,5</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">3,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">4,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">5,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">6,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">6,5</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">8,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">9,5</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">10,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">12,7</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">16,0</td></tr>
+        <tr><td style="border: 1px solid #ccc; padding: 4px; text-align: center;">20,0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top: 30px;">
+    <button onclick="gerarPDFMateriaisUnificada()" class="btn-pdf">📄 Gerar PDF Profissional</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
