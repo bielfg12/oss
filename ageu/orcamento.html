@@ -12,9 +12,11 @@
 <div class="menu-tabs">
   <button class="tab-button active" onclick="mostrarAba('aba-orcamento', event)">Orçamento</button>
   <button class="tab-button" onclick="mostrarAba('aba-material', event)">Material</button>
+<button class="tab-button" onclick="mostrarAba('aba-ordem-producao', event)">Ordem de Produção</button>
+<button class="tab-button" onclick="mostrarAba('aba-apontamento-hora', event)">Apontamento de Hora</button>
+<button class="tab-button" onclick="mostrarAba('aba-chaparia', event)">Chaparia</button>
 </div>
 
-<h1>Orçamento I9</h1>
 
 <div id="aba-orcamento" class="tab-content" style="display: block;">
   <div class="section">
@@ -65,8 +67,7 @@
   <div class="section">
     <label>Observações:</label>
     <textarea id="observacoes" rows="10">
-OBSERVAÇÕES: 1.2 Durante o processo de dobra, poderão ocorrer marcas nas peças devido ao contato entre a ferramenta de dobra e o material a ser dobrado. 1.3  A coleta do pedido, bem como a remoção das sobras de material sendo este fornecido pelo cliente, será de (05 dias uteis ) mediante aviso do comercial sobre a finalização do processo, após este prazo haverá o descarte sem obrigação de ressarcimento. 1.4 Os desenhos de corte, dobra, montagem e informações contidas como cotas, escalas são de responsabilidade do nosso cliente. 1.5 Para aproveitamento do material exigimos pedido de compra ou semelhante a este. 1.6 Os arquivos desenvolvidos pela Itu Inox, são de uso interno da empresa. 1.7 O desenvolvimento de projeto por parte do nosso setor de engenharia incidirá no acréscimo sobre o orçamento. 1.8  Não armazenamos material de cliente, exceto durante o período de utilização. 1.9 Enviado o pedido de compra, não será possível modificação, visto que toda informação deve ser revisada antes da aceitação da proposta. 10  Autorizado este orçamento, o cliente tem 02 dias úteis para declinar o pedido. MULTA POR CANCELAMENTO APÓS O PRAZO ESTIMADO - 15% sobre o valor total dos produtos.															
-
+OBSERVAÇÕES: 1.2 Durante o processo de dobra, poderão ocorrer marcas nas peças devido ao contato entre a ferramenta de dobra e o material a ser dobrado. 1.3  A coleta do pedido, bem como a remoção das sobras de material sendo este fornecido pelo cliente, será de (05 dias uteis ) mediante aviso do comercial sobre a finalização do processo, após este prazo haverá o descarte sem obrigação de ressarcimento. 1.4 Os desenhos de corte, dobra, montagem e informações contidas como cotas, escalas são de responsabilidade do nosso cliente. 1.5 Para aproveitamento do material exigimos pedido de compra ou semelhante a este. 1.6 Os arquivos desenvolvidos, são de uso interno da empresa. 1.7 O desenvolvimento de projeto por parte do nosso setor de engenharia incidirá no acréscimo sobre o orçamento. 1.8  Não armazenamos material de cliente, exceto durante o período de utilização. 1.9 Enviado o pedido de compra, não será possível modificação, visto que toda informação deve ser revisada antes da aceitação da proposta. 10  Autorizado este orçamento, o cliente tem 02 dias úteis para declinar o pedido. MULTA POR CANCELAMENTO APÓS O PRAZO ESTIMADO - 15% sobre o valor total dos produtos.															
     </textarea>
   </div>
 
@@ -152,6 +153,154 @@ OBSERVAÇÕES: 1.2 Durante o processo de dobra, poderão ocorrer marcas nas peç
 
   <div style="margin-top: 30px;">
     <button onclick="gerarPDFMateriaisUnificada()" class="btn-pdf">📄 Gerar PDF Profissional</button>
+  </div>
+</div>
+
+<div id="aba-ordem-producao" class="tab-content" style="display: none;">
+  <div class="section">
+    <label>ORDEM DE SERVIÇO:</label><input id="ordemServico">
+    <label>ORÇAMENTO Nº:</label><input id="orcamentoNumero">
+    <label>A Sr:</label><input id="aSr">
+    <label>Data:</label><input id="dataOrdem" value="28/06/25">
+    <label>Entrega:</label><input id="entrega">
+  </div>
+
+  <div class="section">
+    <h3>Itens da Ordem de Produção</h3>
+    <div class="table-wrapper" style="overflow-x:auto;">
+      <table id="tabelaOrdemProducao">
+        <thead>
+          <tr>
+            <th>Item</th><th>QTD.</th><th>UN</th><th>Tipo</th><th>Esp</th><th>MATERIAL</th><th>Desenho Nº</th>
+            <th>Descrição do Material</th><th>Corte Laser</th><th>Dobra CNC</th><th>Cald.</th>
+            <th>Acabamento</th><th>Engenharia</th><th>Usinagem</th><th>PINTURA/ZINCO</th>
+            <th>LARGURA</th><th>COMPRIMENTO</th>
+          </tr>
+        </thead>
+        <tbody id="corpoOrdemProducao"></tbody>
+      </table>
+    </div>
+    <button onclick="adicionarLinhaOrdemProducao()" class="btn-adicionar">➕ Adicionar Linha</button>
+  </div>
+
+  <div class="section">
+    <h3>Tempos de Processo</h3>
+    <label>Tempo Orçamento:</label><input type="text" id="tempoOrcamento">
+
+    <label>Engenharia (horas):</label><input type="text" id="tempoEngenharia">
+    <label>Corte Laser (horas):</label><input type="text" id="tempoLaser">
+    <label>Dobra (horas):</label><input type="text" id="tempoDobra">
+    <label>Montagem (horas):</label><input type="text" id="tempoMontagem">
+    <label>Acabamento (horas):</label><input type="text" id="tempoAcabamento">
+    <label>Solda (horas):</label><input type="text" id="tempoSolda">
+  </div>
+
+  <div class="section">
+    <h3>Produção</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Setor</th><th>Dia</th><th>Início</th><th>Término</th><th>Pausa</th><th>Até</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Corte a Laser</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td>Dobradeira</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td>Montagem</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td>Solda</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+          <tr><td>Acabamento</td><td><input></td><td><input></td><td><input></td><td><input></td><td><input></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <p><strong>Após a finalização do processo o papel deverá ser retornado ao escritório.</strong></p>
+  </div>
+
+  <div style="margin-top: 30px;">
+    <button onclick="gerarPDFOrdemProducao()" class="btn-pdf">📄 Gerar PDF Ordem de Produção</button>
+  </div>
+</div>
+
+<div id="aba-apontamento-hora" class="tab-content" style="display: none;">
+  <div class="section">
+    <h3>Apontamento de Hora - 2024</h3>
+    <div class="table-wrapper" style="overflow-x:auto;">
+      <table id="tabelaApontamentoHora">
+        <thead>
+          <tr>
+            <th>OS</th><th>SETOR</th><th>DIA</th><th>INICIO</th><th>PAUSA</th><th>MOTIVO (PAUSA)</th><th>ATÉ</th><th>TÉRMINO</th>
+          </tr>
+        </thead>
+        <tbody id="corpoApontamentoHora"></tbody>
+      </table>
+    </div>
+    <button onclick="adicionarLinhaApontamentoHora()" class="btn-adicionar">➕ Adicionar Linha</button>
+  </div>
+
+  <div class="section">
+    <p><strong>Após a finalização do processo o papel deverá ser retornado ao escritório.</strong></p>
+  </div>
+
+  <div style="margin-top: 30px;">
+    <button onclick="gerarPDFApontamentoHora()" class="btn-pdf">📄 Gerar PDF Apontamento de Hora</button>
+  </div>
+</div>
+
+<div id="aba-chaparia" class="tab-content" style="display: none;">
+  <div class="section">
+    <h3>Tabela para Cálculo de Aproveitamento de Chaparia</h3>
+    <div class="table-wrapper" style="overflow-x:auto;">
+      <table id="tabelaChaparia">
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Material</th>
+            <th>Quantidade</th>
+            <th>Espessura (mm)</th>
+            <th>Largura (mm)</th>
+            <th>Comprimento (mm)</th>
+            <th>Peso Unit. (Kg)</th>
+            <th>Peso x Qtde.</th>
+            <th>Área m²</th>
+            <th>MP Carbono (R$/Kg)</th>
+            <th>MP Inox (R$/Kg)</th>
+          </tr>
+        </thead>
+        <tbody id="corpoChaparia"></tbody>
+      </table>
+    </div>
+    <button onclick="adicionarLinhaChaparia()" class="btn-adicionar">➕ Adicionar Linha</button>
+  </div>
+
+  <div class="section">
+    <h4>Materiais e Valores</h4>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="text-align: left;">Material Chapa</th>
+          <th>Valor R$</th>
+          <th>Unidade</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>INOX304</td><td>R$ 55,00</td><td>KG</td></tr>
+        <tr><td>INOX316</td><td>R$ 90,00</td><td>KG</td></tr>
+        <tr><td>INOX430</td><td>R$ 35,00</td><td>KG</td></tr>
+        <tr><td>SAE1020</td><td>R$ 16,00</td><td>KG</td></tr>
+        <tr><td>GALVANIZADO</td><td>R$ 17,00</td><td>KG</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <p><strong>Peso Total (Kg):</strong> 0,00</p>
+    <p><strong>Área Total (m²):</strong> 0,00</p>
+    <p><strong>Valor Real com Nota:</strong> R$ 0,00 (Carbono) | R$ 0,00 (Inox)</p>
+  </div>
+
+  <div style="margin-top: 30px;">
+    <button onclick="gerarPDFChaparia()" class="btn-pdf">📄 Gerar PDF Chaparia</button>
   </div>
 </div>
 
