@@ -61,56 +61,58 @@
 
   <!-- Firebase SDK -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // Substitua com a mesma configuração do seu projeto Firebase
-    const firebaseConfig = {
-  apiKey: "AIzaSyBLZW1wp5w3MAuWyBqglNkKwDRlrsa8Ia8",
-  authDomain: "site-xtvsvs.firebaseapp.com",
-  projectId: "site-xtvsvs",
-  storageBucket: "site-xtvsvs.firebasestorage.app",
-  messagingSenderId: "885976868605",
-  appId: "1:885976868605:web:a27cd91251186e1d148094"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyBLZW1wp5w3MAuWyBqglNkKwDRlrsa8Ia8",
+    authDomain: "site-xtvsvs.firebaseapp.com",
+    projectId: "site-xtvsvs",
+    storageBucket: "site-xtvsvs.firebasestorage.app",
+    messagingSenderId: "885976868605",
+    appId: "1:885976868605:web:a27cd91251186e1d148094"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    async function carregarConvidados() {
-  const tabela = document.getElementById("tabelaConvidados");
-  const totalDisplay = document.getElementById("totalPessoas");
-  const querySnapshot = await getDocs(collection(db, "convidados"));
+  async function carregarConvidados() {
+    const tabela = document.getElementById("tabelaConvidados");
+    const totalDisplay = document.getElementById("totalPessoas");
 
-  let totalConfirmados = 0;
+    const convidadosRef = collection(db, "convidados");
+    const q = query(convidadosRef, orderBy("nome")); // Ordenar por nome A-Z
+    const querySnapshot = await getDocs(q);
 
-  querySnapshot.forEach((doc) => {
-    const dados = doc.data();
-    const linha = document.createElement("tr");
+    let totalConfirmados = 0;
 
-    linha.innerHTML = `
-      <td>${dados.nome}</td>
-  <td class="${dados.presenca ? 'sim' : 'nao'}">${dados.presenca ? 'Sim' : 'Não'}</td>
-  <td>${dados.acompanhantes || '-'}</td>
-  <td>${dados.quantidade}</td>
-  <td>${dados.levaraCriancas ? 'Sim' : 'Não'}</td>
-  <td>${dados.nomeCrianca || '-'}</td>
-  <td>${dados.idadeCrianca || '-'}</td>
-  <td>${new Date(dados.data.seconds * 1000).toLocaleString()}</td>
-    `;
+    querySnapshot.forEach((doc) => {
+      const dados = doc.data();
+      const linha = document.createElement("tr");
 
-    tabela.appendChild(linha);
+      linha.innerHTML = `
+        <td>${dados.nome}</td>
+        <td class="${dados.presenca ? 'sim' : 'nao'}">${dados.presenca ? 'Sim' : 'Não'}</td>
+        <td>${dados.acompanhantes || '-'}</td>
+        <td>${dados.quantidade}</td>
+        <td>${dados.levaraCriancas ? 'Sim' : 'Não'}</td>
+        <td>${dados.nomeCrianca || '-'}</td>
+        <td>${dados.idadeCrianca || '-'}</td>
+        <td>${new Date(dados.data.seconds * 1000).toLocaleString()}</td>
+      `;
 
-    if (dados.presenca) {
-      totalConfirmados += Number(dados.quantidade);
-    }
-  });
+      tabela.appendChild(linha);
 
-  totalDisplay.innerText = `Total de pessoas confirmadas: ${totalConfirmados}`;
-}
+      if (dados.presenca) {
+        totalConfirmados += Number(dados.quantidade);
+      }
+    });
 
-    carregarConvidados();
-  </script>
+    totalDisplay.innerText = `Total de pessoas confirmadas: ${totalConfirmados}`;
+  }
+
+  carregarConvidados();
+</script>
 
 </body>
 </html>
