@@ -128,7 +128,7 @@
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBLZW1wp5w3MAuWyBqglNkKwDRlrsa8Ia8",
@@ -149,11 +149,8 @@
     presenca = valor;
     const botoes = document.querySelectorAll(".confirm-buttons button");
     botoes.forEach(btn => btn.classList.remove("selected"));
-    if (valor) {
-      botoes[0].classList.add("selected");
-    } else {
-      botoes[1].classList.add("selected");
-    }
+    if (valor) botoes[0].classList.add("selected");
+    else botoes[1].classList.add("selected");
   };
 
   window.setCriancas = function(valor) {
@@ -169,12 +166,22 @@
     }
   };
 
+  function formatarNome(nome) {
+    return nome
+      .toLowerCase()
+      .split(' ')
+      .filter(p => p.trim().length > 0)
+      .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+      .join(' ');
+  }
+
   const form = document.getElementById("rsvpForm");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nome = document.getElementById("nome").value.trim();
-    const acompanhantes = document.getElementById("acompanhantes").value.trim();
+    let nome = document.getElementById("nome").value.trim();
+    nome = formatarNome(nome); // Corrigir nome
+    const acompanhantes = formatarNome(document.getElementById("acompanhantes").value.trim());
     const quantidade = parseInt(document.getElementById("quantidade").value);
 
     if (presenca === null) {
@@ -186,12 +193,20 @@
     let idadeCrianca = "";
 
     if (levaraCriancas) {
-      nomeCrianca = document.getElementById("nomeCrianca").value.trim();
+      nomeCrianca = formatarNome(document.getElementById("nomeCrianca").value.trim());
       idadeCrianca = document.getElementById("idadeCrianca").value.trim();
       if (!nomeCrianca || !idadeCrianca) {
         alert("Por favor, preencha o nome e idade da criança.");
         return;
       }
+    }
+
+    // Verifica se já existe um convidado com o mesmo nome
+    const q = query(collection(db, "convidados"), where("nome", "==", nome));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      alert("Você já confirmou sua presença. Deus abençoe! 🙏");
+      return;
     }
 
     try {
