@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="-1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Internet hotspot - Log in</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script src="js/jquery.mask.min.js"></script>
+ 
+</head>
+<script>
+    function mascaraCPF(cpf){
+        cpf = cpf.replace(/\D/g, ''); // Remove tudo o que não é dígito
+        cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona ponto após os primeiros 3 dígitos
+        cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona ponto após os próximos 3 dígitos
+        cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Adiciona hífen e os últimos dígitos
+        return cpf;
+    }
+</script>
+<body>
+
+    $(if chap-id)
+    <form name="sendin" action="$(link-login-only)" method="post" style="display:none">
+        <input type="hidden" name="username" />
+        <input type="hidden" name="password" />
+        <input type="hidden" name="dst" value="$(link-orig)" />
+        <input type="hidden" name="popup" value="true" />
+    </form>
+
+    <script src="/md5.js"></script>
+    <script>
+        function doLogin() {
+            document.sendin.username.value = document.login.username.value;
+            document.sendin.password.value = hexMD5('$(chap-id)' + document.login.password.value + '$(chap-challenge)');
+            document.sendin.submit();
+            location.href='http://www.cmctelecom.com.br';
+            return false;
+       }
+
+    </script>
+    $(endif)
+    <div class="ie-fixMinHeight">
+        <div class="main">
+            <div class="wrap animated fadeIn">
+                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin()"
+                    $(endif)>
+                    <input type="hidden" name="dst" value="$(link-orig)" />
+                    <input type="hidden" name="popup" value="true" />
+                    <img class="logo" data-name="Layer 1" src="img/Agil_Prefeitura.png" alt="Internet Agil">
+
+                    <p class="info $(if error)alert$(endif)">
+                        $(if error == "")Por favor, insira o usuário e senha.
+
+                        $(if error)$(error)$(endif)
+                    </p>
+                    <label>
+                        <img class="ico" src="img/user.svg" alt="#" />
+                        <input name="username" type="text" placeholder="CPF"  oninput="this.value = mascaraCPF(this.value)" maxlength="14" />
+                    </label>
+
+                    <label>
+                        <img class="ico" src="img/password.svg" alt="#" />
+                        <input name="password" type="password" placeholder="Senha" />
+                    </label>
+
+                    <label>
+                        <input type="submit" value="Conectar" />
+                    </label>
+
+                </form>
+                </label><br>
+                <p class="info bt">Desenvolvido por Ágil Online - Todos os Direitos Reservados.</p>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
