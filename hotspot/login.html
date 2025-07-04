@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="-1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ágil Online - Menu de Conexões</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    $(if chap-id)
+    <form name="sendin" action="$(link-login-only)" method="post" style="display:none">
+        <input type="hidden" name="username" />
+        <input type="hidden" name="password" />
+        <input type="hidden" name="dst" value="$(link-orig)" />
+        <input type="hidden" name="popup" value="true" />
+    </form>
+
+    <script src="/md5.js"></script>
+    <script>
+        function doLogin() {
+            document.sendin.username.value = document.login.username.value;
+            document.sendin.password.value = hexMD5('$(chap-id)' + document.login.password.value + '$(chap-challenge)');
+            document.sendin.submit();
+            return false;
+        }
+
+    </script>
+    $(endif)
+    <div class="ie-fixMinHeight">
+        <div class="main">
+            <div class="wrap animated fadeIn">
+                <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin()"
+                    $(endif)>
+                    <input type="hidden" name="dst" value="$(link-orig)" />
+                    <input type="hidden" name="popup" value="true" />
+                    <img class="logo" data-name="Layer 1" src="img/Agil_Prefeitura.png" alt="Internet Agil">
+
+                    <p class="info $(if error)alert$(endif)">
+                        $(if error == "")Caso seja um novo usuário, clique no botão de <b>Cadastre-se</b>. 
+
+                        $(if error)$(error)$(endif)
+                    </p>
+                </form>
+                <label>
+                    <a href="http://hotspot.cmctelecom.com.br/casadioni/index.php?page=termos"><button class="botao">Cadastre-se</button></a>
+                    <!-- <a href="http://hotspot.cmctelecom.com.br/casadioni/index.php?page=termos"><button class="botao">Cadastre-se</button></a> -->
+                </label><br>
+                <label>
+                   <br><p class="info $(if error)alert$(endif)">
+                    Em caso de um usuário já cadastrado, clique no botão de <b>Validar o Cadastro</b>.
+                    </p>
+                    <a href="http://hotspot.cmctelecom.com.br//casadioni/index.php?page=novoCadastro"><button class="botao">Validar o Cadastro</button></a>
+                    <!-- <a href="http://hotspot.cmctelecom.com.br/casadioni/index.php?page=novoCadastro"><button class="botao">Validar o Cadastro</button></a> -->
+                </label><br>
+                <label>
+                    <br><p class="info $(if error)alert$(endif)"> <!--22/03/2022 Adicionar o botão para o Já Sou cliente Ágil -->
+                     Caso seja um cliente Ágil, clique no botão de <b>Já Sou Cliente Ágil</b>.
+                     </p>                                                      
+                     <a href="http://45.6.167.108/casadioni/index.php?page=jaSouClienteAgil"><button class="botao">Já Sou Cliente Ágil</button></a>
+                     <!-- <a href="http://hotspot.cmctelecom.com.br/casadioni/index.php?page=jaSouClienteAgil"><button class="botao">Já Sou Cliente Ágil</button></a> -->
+                     <!-- <a href="index.php?page=apiBuscaCpf.php"><button class="botao">Já Sou Cliente Ágil</button></a> -->
+                     <!-- C:\xampp\htdocs\BackUp Mikrotik e Servidor 22 do 03\Filezilla\html\casadioni\index.php -->
+                     <!--<a href="localhost/casadioni/index.php?page=jaSouClienteAgil"><button class="botao">Já Sou Cliente Ágil</button></a>-->
+                    <!-- O certo é usar esse <a href="http://45.6.167.108:/casadioni/index.php?page=jaSouClienteAgil"><button class="botao">Já Sou Cliente Ágil</button></a> -->
+                    </label><br>
+                <p class="info bt">Desenvolvido por Ágil Online ® <br>todos os direitos reservados.</p>
+
+            </div>
+        </div> 
+    </div>
+</body>
+
+</html>
