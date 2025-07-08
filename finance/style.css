@@ -166,4 +166,17 @@
     flex: 1 1 220px;  /* para ser responsivo */
   }
 
- 
+  #btnLimparTudo {
+    background-color: #d9534f; /* vermelho */
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  #btnLimparTudo:hover {
+    background-color: #c9302c;
+  }
