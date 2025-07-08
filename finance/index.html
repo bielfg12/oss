@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Financeira</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Dashboard Financeira</h1>
+  </header>
+
+  <section class="resumo">
+    <div class="card">Renda Bruta: <span id="rendaBruta">R$ 0,00</span></div>
+    <div class="card">Investimentos: <span id="investimentos">R$ 0,00</span></div>  <!-- novo -->
+    <div class="card">Gastos: <span id="gastos">R$ 0,00</span></div>
+    <div class="card">Reserva de Emergência: <span id="reservaEmergencia">R$ 0,00</span></div>
+    <div class="card">Renda Líquida: <span id="rendaLiquida">R$ 0,00</span></div>
+  </section>
+
+  <section class="widgets-container">
+    <div class="widget">
+      <h2>Adicionar Renda</h2>
+      <input type="number" id="valorRenda" placeholder="Valor" />
+      <button onclick="adicionarRenda()">Adicionar</button>
+    </div>
+
+    <div class="widget">
+      <h2>Investimento (Casa, Carro...)</h2>
+      <input type="text" id="descInvest" placeholder="Descrição" />
+      <input type="number" id="valorInvest" placeholder="Valor" />
+      <button onclick="adicionarInvestimento()">Adicionar</button>
+    </div>
+
+    <div class="widget">
+      <h2>Reserva de Emergência</h2>
+      <input type="number" id="valorReserva" placeholder="Valor" />
+      <button onclick="adicionarReserva()">Adicionar</button>
+    </div>
+
+    <div class="widget">
+      <h2>Adicionar Gasto</h2>
+      <select id="categoriaGasto">
+        <option>Cartão de Crédito</option>
+        <option>Casa</option>
+        <option>Entretenimento</option>
+        <option>Investimento</option>
+      </select>
+      <input type="text" id="descGasto" placeholder="Descrição" />
+      <input type="number" id="valorGasto" placeholder="Valor" />
+      <button onclick="adicionarGasto()">Adicionar</button>
+    </div>
+  </section>
+
+</section>
+
+<section class="listas-container">
+    <section class="lista-gastos">
+      <h2>Lista de Gastos</h2>
+      <ul id="listaGastos"></ul>
+    </section>
+  
+    <section class="lista-investimentos">
+      <h2>Lista de Investimentos</h2>
+      <ul id="listaInvestimentos"></ul>
+    </section>
+  </section>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

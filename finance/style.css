@@ -1,0 +1,169 @@
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin: 1rem;
+  }
+  
+  .widget {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    width: 280px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .widget input,
+  .widget select,
+  .widget button {
+    margin: 0.5rem 0;
+    padding: 0.7rem;
+    border-radius: 15px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+  }
+
+  header h1 {
+    text-align: center;
+  }
+  
+  .widget button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .widget button:hover {
+    background-color: #45a049;
+  }
+  
+  .widget button:active {
+    background-color: #3b8e40;
+  }
+  
+  .listas-container {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem !important;
+    flex-wrap: wrap; /* para responsividade, quebra em telas pequenas */
+    max-width: 1250px; /* ajuste conforme preferir */
+    margin: 0 auto;
+  }
+  
+  .lista-gastos,
+  .lista-investimentos {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    flex: 1 1 480px; /* permite crescer e diminuir, base 480px */
+    max-width: 600px; /* opcional pra limitar máximo */
+    box-sizing: border-box;
+    min-width: 300px; /* pra não ficar muito pequeno */
+  }
+  
+  .lista-gastos ul,
+  .lista-investimentos ul {
+    list-style-type: none;
+    padding-left: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid #ddd;
+    margin-top: 0.5rem;
+  }
+  
+  .lista-gastos li,
+  .lista-investimentos li {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+  }
+  
+  .lista-gastos li span.categoria,
+  .lista-investimentos li span.categoria {
+    font-weight: 600;
+    color: #555;
+  }
+  
+  @media (max-width: 700px) {
+    .dashboard-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    .widget {
+      width: 90%;
+    }
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .resumo {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+  
+  .resumo .card {
+    background-color: #4caf50;
+    color: white;
+    padding: 0.5rem 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    min-width: 80px;
+    height: 40px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.0rem;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .resumo .card:hover {
+    background-color: #45a049;
+  }
+  
+  .resumo .card span {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.6rem;
+  }
+  
+  .widgets-container {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap; /* permite quebra em várias linhas se precisar */
+    justify-content: center; /* centraliza os widgets */
+    width: 100%; /* ou limite a largura que preferir */
+  }
+  
+  .widget {
+    background: #f4f4f4;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    min-width: 220px; /* ajuste conforme quiser */
+    flex: 1 1 220px;  /* para ser responsivo */
+  }
+
+ 
