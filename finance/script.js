@@ -146,5 +146,34 @@ function adicionarTransacao(tipo, valor, descricao = "", categoria = "") {
   }
   
   // Atualiza ao carregar a página
-  window.onload = atualizarTudo;
+  window.onload = () => {
+    atualizarTudo();
   
+    const btnLimpar = document.getElementById("btnLimparTudo");
+    if (btnLimpar) {
+      btnLimpar.addEventListener("click", limparTudo);
+    }
+  };
+  
+
+  async function limparTudo() {
+    if (!confirm("Tem certeza que deseja apagar todas as transações? Essa ação não pode ser desfeita.")) {
+      return;
+    }
+  
+    try {
+      const snapshot = await window.db.collection("transacoes").get();
+      const batch = window.db.batch();
+  
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+  
+      await batch.commit();
+      alert("Todas as transações foram apagadas!");
+      atualizarTudo(); // Atualiza a UI após apagar
+    } catch (error) {
+      console.error("Erro ao apagar dados:", error);
+      alert("Erro ao apagar os dados. Tente novamente.");
+    }
+  }
