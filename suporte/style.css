@@ -95,3 +95,21 @@ body {
     max-width: 240px;
     height: auto;
   }
+
+  .voltar1 {
+    background-color: #edbb04;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    margin-top: 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease;
+  }
+  
+  .voltar1:hover {
+    background-color: #d1a503;
+  }
