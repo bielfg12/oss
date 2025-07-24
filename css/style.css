@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #474646;
-    background-image: url('img/bg.png');
+    background-image: url('../img/bg.png');
     background-size: cover;
     background-position: center;
     backdrop-filter: blur(40px); /* Aplica desfoque ao fundo */
