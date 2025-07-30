@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Controle TVs Roku</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 40px;
+    }
+    button {
+      background-color: #28a745;
+      border: none;
+      color: white;
+      padding: 18px 36px;
+      margin: 10px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 220px;
+    }
+    button#desligar {
+      background-color: #dc3545;
+    }
+    button:hover {
+      filter: brightness(0.9);
+    }
+    #status {
+      margin-top: 30px;
+      font-size: 16px;
+      text-align: center;
+      white-space: pre-line;
+      min-height: 50px;
+      max-width: 400px;
+      word-wrap: break-word;
+      border: 1px solid #444;
+      padding: 15px;
+      border-radius: 6px;
+      background-color: #222;
+    }
+  </style>
+</head>
+<body>
 
+  <h1>Controle das TVs Roku</h1>
+
+  <button id="ligar">Ligar e Configurar TVs</button>
+  <button id="desligar">Desligar TVs</button>
+
+  <div id="status">Status das TVs aparecerá aqui.</div>
+
+  <script>
+    // Troque pelo IP do seu PC rodando backend Python
+    const backendUrl = "http://192.168.254.123:5000";
+
+    const statusEl = document.getElementById("status");
+
+    async function chamarApi(endpoint) {
+      try {
+        statusEl.textContent = "⏳ Processando...";
+        const response = await fetch(`${backendUrl}/${endpoint}`, { method: "POST" });
+        const data = await response.json();
+        statusEl.textContent = data.status;
+      } catch (error) {
+        statusEl.textContent = "❌ Erro ao conectar com o backend.";
+        console.error(error);
+      }
+    }
+
+    document.getElementById("ligar").addEventListener("click", () => chamarApi("ligar"));
+    document.getElementById("desligar").addEventListener("click", () => chamarApi("desligar"));
+  </script>
+
+</body>
+</html>
